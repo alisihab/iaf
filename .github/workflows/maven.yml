@@ -31,6 +31,7 @@ jobs:
       uses: zcong1993/setup-timezone@master
       with:
         timezone: Europe/Amsterdam
-
+    - name: use custom settings.xml
+      run: cp .travis.settings.xml ~/.m2/settings.xml 
     - name: Build project with Maven
       run: mvn install -B -V -T1 -Dmaven.javadoc.skip=true -Pibissource,codecoverage
