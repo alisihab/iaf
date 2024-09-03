@@ -138,53 +138,11 @@ public class IdinSender extends SenderWithParametersBase implements HasPhysicalD
 	private Configuration getConfiguration() throws ConfigurationException {
 		Configuration idinConfig = createConfiguration();
 
-		if(StringUtils.isNotEmpty(getMerchantID()))
-			idinConfig.setMerchantID(getMerchantID());
-		if(getMerchantSubID() > 0)
-			idinConfig.setMerchantSubID(getMerchantSubID());
-		if(StringUtils.isNotEmpty(getMerchantReturnUrl()))
-			idinConfig.setMerchantReturnUrl(getMerchantReturnUrl());
-
-		if(StringUtils.isNotEmpty(getAcquirerDirectoryUrl()))
-			idinConfig.setAcquirerDirectoryURL(getAcquirerDirectoryUrl());
-		if(StringUtils.isNotEmpty(getAcquirerTransactionUrl()))
-			idinConfig.setAcquirerTransactionURL(getAcquirerTransactionUrl());
-		if(StringUtils.isNotEmpty(getAcquirerStatusUrl()))
-			idinConfig.setAcquirerStatusURL(getAcquirerStatusUrl());
-
-		if(StringUtils.isNotEmpty(getKeyStoreLocation())) {
-			idinConfig.setKeyStoreLocation(getKeyStoreLocation());
-			if(StringUtils.isNotEmpty(getKeyStorePassword()))
-				idinConfig.setKeyStorePassword(getKeyStorePassword());
-		}
-
-		if(StringUtils.isNotEmpty(getMerchantCertificateAlias())) {
-			idinConfig.setMerchantCertificateAlias(getMerchantCertificateAlias());
-			if(StringUtils.isNotEmpty(getMerchantCertificatePassword()))
-				idinConfig.setMerchantCertificatePassword(getMerchantCertificatePassword());
-		}
-
-		if(StringUtils.isNotEmpty(getAcquirerCertificateAlias()))
-			idinConfig.setAcquirerCertificateAlias(getAcquirerCertificateAlias());
-		if(StringUtils.isNotEmpty(getAcquirerAlternativeCertificateAlias()))
-			idinConfig.setAcquirerAlternateCertificateAlias(getAcquirerAlternativeCertificateAlias());
-
 		if(StringUtils.isNotEmpty(getSamlCertificateAlias())) {
 			idinConfig.setSamlCertificateAlias(getSamlCertificateAlias());
 			if(StringUtils.isNotEmpty(getSAMLCertificatePassword()))
 				idinConfig.setSamlCertificatePassword(getSAMLCertificatePassword());
 		}
-
-		if(isLogsEnabled())
-			idinConfig.setLogsEnabled(true);
-		if(isServiceLogsEnabled())
-			idinConfig.setServiceLogsEnabled(true);
-		if(StringUtils.isNotEmpty(getServiceLogsLocation()))
-			idinConfig.setServiceLogsLocation(getServiceLogsLocation());
-		if(StringUtils.isNotEmpty(getServiceLogsPattern()))
-			idinConfig.setServiceLogsPattern(getServiceLogsPattern());
-
-		idinConfig.setTls12Enabled(isTls12Enabled());
 
 		try {
 			idinConfig.Setup(idinConfig); // Somehow required to setup the KeyStoreKeyProviderFactory.
@@ -196,8 +154,7 @@ public class IdinSender extends SenderWithParametersBase implements HasPhysicalD
 	}
 
 	protected Configuration createConfiguration() throws ConfigurationException {
-		final Configuration config = new Configuration();
-
+		Configuration config = null;
 		if(StringUtils.isNotEmpty(getIDinConfigurationXML())) {
 			URL defaultIdinConfigXML = ClassLoaderUtils.getResourceURL(this, getIDinConfigurationXML());
 			if(defaultIdinConfigXML == null) {
@@ -205,10 +162,30 @@ public class IdinSender extends SenderWithParametersBase implements HasPhysicalD
 			}
 
 			try {
+				config = new Configuration();
 				config.Load(defaultIdinConfigXML.openStream());
 			} catch (ParserConfigurationException | SAXException | IOException e) {
 				throw new ConfigurationException("unable to read iDin configuration from XML file ["+getIDinConfigurationXML()+"]", e);
 			}
+		} else {
+			config = new Configuration(getMerchantID(),
+										getMerchantSubID(),
+										getMerchantReturnUrl(),
+										getKeyStoreLocation(),
+										getKeyStorePassword(),
+										getMerchantCertificateAlias(),
+										getMerchantCertificatePassword(),
+										getAcquirerCertificateAlias(),
+										getAcquirerAlternativeCertificateAlias(),
+										getAcquirerDirectoryUrl(),
+										getAcquirerTransactionUrl(),
+										getAcquirerStatusUrl(),
+										isLogsEnabled(),
+										isServiceLogsEnabled(),
+										getServiceLogsLocation(),
+										getServiceLogsPattern(),
+										isTls12Enabled(),
+										null);
 		}
 		return config;
 	}
