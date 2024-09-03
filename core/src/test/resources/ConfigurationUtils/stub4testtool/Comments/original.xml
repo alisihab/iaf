@@ -1,0 +1,16 @@
+<configuration>
+	<!-- This comments is not removed -->
+	<adapter name="Comments">
+		<!-- This comments is not removed -->
+		<receiver name="Comments">
+			<!-- This comments is removed as the receiver is commented out-->
+			<listener name="Comments"
+				className="org.frankframework.jms.JmsListener">
+				<!-- This comments is removed as the receiver is commented out-->
+				<sender name="Comments-ReplySender"
+					className="org.frankframework.jms.JmsSender"
+					lookupDestination="false"/>
+			</listener>
+		</receiver>
+	</adapter>
+</configuration>

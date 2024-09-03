@@ -1,0 +1,30 @@
+<configuration>
+	  <adapter name="LocalFileSystemSender">
+      <receiver name="testtool-LocalFileSystemSender">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-LocalFileSystemSender"/>
+      </receiver>
+		    <receiver name="LocalFileSystemSender">
+			      <listener className="org.frankframework.receivers.JavaListener"
+                   name="LocalFileSystemSender"/>
+		    </receiver>
+      <receiver name="testtool-LocalFileSystemSender-1">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-LocalFileSystemSender-1"/>
+      </receiver>
+
+		    <pipeline>
+			      <exits>
+				        <exit path="READY" state="success"/>
+			      </exits>
+			      <pipe name="Call Sender"
+               className="org.frankframework.pipes.SenderPipe"
+               timeoutOnResult="[timeout]"
+               exceptionOnResult="[error]">
+				        <sender className="org.frankframework.senders.LocalFileSystemSender"
+                    root="C:\"/>
+				        <forward name="success" path="READY"/>
+			      </pipe>
+		    </pipeline>
+	  </adapter>
+</configuration>

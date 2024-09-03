@@ -1,65 +1,129 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.ibissource</groupId>
-		<artifactId>ibis-adapterframework-parent</artifactId>
-		<version>7.6-SNAPSHOT</version>
+		<groupId>org.frankframework</groupId>
+		<artifactId>frankframework-parent</artifactId>
+		<version>${revision}</version>
 	</parent>
 
-	<artifactId>ibis-adapterframework-cmis</artifactId>
-	<name>Ibis AdapterFramework support for Cmis</name>
+	<artifactId>frankframework-cmis</artifactId>
+	<name>Frank!Framework support for Cmis</name>
 
 	<properties>
-		<opencmis.version>1.1.0</opencmis.version>
+		<opencmis.version>1.2.2</opencmis.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.ibissource</groupId>
-			<artifactId>ibis-adapterframework-core</artifactId>
+			<groupId>org.frankframework</groupId>
+			<artifactId>frankframework-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.chemistry.opencmis</groupId>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.kgs-software</groupId>
 			<artifactId>chemistry-opencmis-client-impl</artifactId>
 			<version>${opencmis.version}</version>
 			<exclusions>
-				<exclusion><!-- Exclude 1.0-2 as 1.0.1 is already included by xmlbeans. -->
-					<groupId>javax.xml.stream</groupId>
-					<artifactId>stax-api</artifactId>
+				<exclusion>
+					<!-- Omitted because CORE uses a different version -->
+					<groupId>org.apache.cxf</groupId>
+					<artifactId>cxf-rt-ws-policy</artifactId>
+				</exclusion>
+				<!-- to avoid stax1 vs stax2 incompatibility problems -->
+				<exclusion>
+					<groupId>org.codehaus.woodstox</groupId>
+					<artifactId>woodstox-core-asl</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.chemistry.opencmis</groupId>
+			<groupId>com.kgs-software</groupId>
 			<artifactId>chemistry-opencmis-server-bindings</artifactId>
 			<version>${opencmis.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- CXF -->
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxws</artifactId>
+			<version>${cxf.version}</version>
+			<exclusions>
+				<exclusion><!-- excluded because we want to ignore this (1.2.2) version! this dependency handles javax.activation.* imports, and is NOT compatible with the IBM JRE -->
+					<groupId>jakarta.activation</groupId>
+					<artifactId>jakarta.activation-api</artifactId>
+				</exclusion>
+				<exclusion><!-- added by the JDK 9 profile in CXF-Parent -->
+					<groupId>org.apache.geronimo.specs</groupId>
+					<artifactId>geronimo-jta_1.1_spec</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-transports-http</artifactId>
+			<version>${cxf.version}</version>
+			<exclusions>
+				<exclusion><!-- added by the JDK 9 profile in CXF-Parent -->
+					<groupId>org.apache.geronimo.specs</groupId>
+					<artifactId>geronimo-jta_1.1_spec</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-ws-policy</artifactId>
+			<version>${cxf.version}</version>
+			<exclusions>
+				<exclusion><!-- added by the JDK 9 profile in CXF-Parent -->
+					<groupId>org.apache.geronimo.specs</groupId>
+					<artifactId>geronimo-jta_1.1_spec</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
 		<dependency>
-			<groupId>org.ibissource</groupId>
-			<artifactId>ibis-adapterframework-core</artifactId>
+			<groupId>org.frankframework</groupId>
+			<artifactId>frankframework-core</artifactId>
 			<classifier>tests</classifier>
 			<type>test-jar</type>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- Test scoped and provided dependencies -->
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version> 
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>1.8.5</version>
+			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<scope>provided</scope>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

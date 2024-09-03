@@ -1,0 +1,42 @@
+<configuration>
+	<adapter name="SenderSeries">
+		<receiver name="SenderSeries">
+			<listener
+				className="org.frankframework.receivers.JavaListener"
+				name="SenderSeries"
+			/>
+		</receiver>
+
+		<pipeline>
+			<exits>
+				<exit path="READY" state="success"/>
+			</exits>
+			<pipe
+				name="Call Sender"
+				className="org.frankframework.pipes.SenderPipe"
+				>
+				<sender className="org.frankframework.senders.SenderSeries">
+					<sender className="org.frankframework.jms.JmsSender"
+						destinationName="Test1"
+						lookupDestination="false"/>
+					<sender name="JmsSender-L1"
+						className="org.frankframework.jms.JmsSender"
+						destinationName="Test2"
+						lookupDestination="false"/>
+					<sender className="org.frankframework.senders.ParallelSenders">
+						<sender className="org.frankframework.senders.EchoSender"/>
+						<sender className="org.frankframework.jms.JmsSender"
+							destinationName="Test3"
+							lookupDestination="false"/>
+						<sender name="JmsSender-L2"
+							className="org.frankframework.jms.JmsSender"
+							destinationName="Test4"
+							lookupDestination="false"/>
+					</sender>
+					<sender className="org.frankframework.senders.EchoSender"/>
+				</sender>
+				<forward name="success" path="READY"/>
+			</pipe>
+		</pipeline>
+	</adapter>
+</configuration>

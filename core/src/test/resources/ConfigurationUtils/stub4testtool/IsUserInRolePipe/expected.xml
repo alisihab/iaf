@@ -1,0 +1,26 @@
+<configuration>
+	  <adapter name="IsUserInRolePipe">
+      <receiver name="testtool-IsUserInRolePipe">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-IsUserInRolePipe"/>
+      </receiver>
+		    <receiver>
+			      <listener className="org.frankframework.receivers.JavaListener"
+                   name="IsUserInRolePipe"/>
+		    </receiver>
+      <receiver name="testtool-IsUserInRolePipe-1">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-IsUserInRolePipe-1"/>
+      </receiver>
+		    <pipeline firstPipe="IsUserInRolePipe">
+			      <exits>
+				        <exit path="EXIT" state="success"/>
+			      </exits>
+			      <pipe name="IsUserInRolePipe"
+               className="org.frankframework.pipes.EchoPipe">
+				        <forward name="success" path="EXIT"/>
+				        <forward name="notInRole" path="EXIT"/>
+			      </pipe>
+		    </pipeline>
+	  </adapter>
+</configuration>

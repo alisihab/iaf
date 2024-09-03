@@ -1,0 +1,26 @@
+<configuration>
+	<adapter name="ResultSet2FileSender">
+		<receiver name="ResultSet2FileSender">
+			<listener
+				className="org.frankframework.receivers.JavaListener"
+				name="ResultSet2FileSender"
+			/>
+		</receiver>
+
+		<pipeline>
+			<exits>
+				<exit path="READY" state="success"/>
+			</exits>
+			<pipe
+				name="Call Sender"
+				className="org.frankframework.pipes.SenderPipe"
+				>
+				<sender
+					className="org.frankframework.jdbc.ResultSet2FileSender"
+					append="true"
+				/>
+				<forward name="success" path="READY"/>
+			</pipe>
+		</pipeline>
+	</adapter>
+</configuration>

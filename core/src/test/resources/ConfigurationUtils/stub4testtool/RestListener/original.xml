@@ -1,0 +1,12 @@
+<configuration>
+	<adapter name="RestListener">
+		<receiver>
+			<listener
+				name="RestListener"
+				className="org.frankframework.http.RestListener"
+				method="post"
+				uriPattern="insert"/>
+			<messageLog className="org.frankframework.jdbc.JdbcTransactionalStorage" slotId="ApiListenerDuplicateCheck" />
+		</receiver>
+	</adapter>
+</configuration>

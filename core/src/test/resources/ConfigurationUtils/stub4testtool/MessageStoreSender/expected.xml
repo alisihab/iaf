@@ -1,0 +1,33 @@
+<configuration>
+	  <adapter name="MessageStoreSender">
+      <receiver name="testtool-MessageStoreSender">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-MessageStoreSender"/>
+      </receiver>
+		    <receiver name="MessageStoreSender">
+			      <listener className="org.frankframework.receivers.JavaListener"
+                   name="MessageStoreSender"/>
+		    </receiver>
+      <receiver name="testtool-MessageStoreSender-1">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-MessageStoreSender-1"/>
+      </receiver>
+
+		    <pipeline>
+			      <exits>
+				        <exit path="READY" state="success"/>
+			      </exits>
+			      <pipe name="Call Sender"
+               className="org.frankframework.pipes.SenderPipe"
+               timeoutOnResult="[timeout]"
+               exceptionOnResult="[error]">
+				        <sender className="org.frankframework.jdbc.MessageStoreSender"
+                    slotId="TestMessageStoreSenderAndListener-Queue"
+                    sessionKeys="key1,key2">
+					          <param name="messageId" xpathExpression="/Envelope/Header/MessageID"/>
+				        </sender>
+				        <forward name="success" path="READY"/>
+			      </pipe>
+		    </pipeline>
+	  </adapter>
+</configuration>

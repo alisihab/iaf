@@ -1,49 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
+	<JarScanner scanClassPath="false" scanAllFiles="false" scanAllDirectories="false"/>
 
-	<!-- 
-		Support for XA using BTM requires JDBC datasources to be configured via
-		factory="org.apache.naming.factory.BeanFactory" and a proper XADataSource classname.
-		Configuration via driverClassName only works for the standard transaction manager.
-	-->
-
-
+	<!-- IbisProp table has a column named VALUE. VALUE is a keyword in h2 db. -->
 	<Resource
 		name="jdbc/ibis4test-h2"
 		factory="org.apache.naming.factory.BeanFactory"
 		type="org.h2.jdbcx.JdbcDataSource"
-		URL="jdbc:h2:file:./ibis4test;MODE=Oracle;DB_CLOSE_ON_EXIT=FALSE;AUTO_SERVER=TRUE"
+		URL="jdbc:h2:mem:ibis4test;NON_KEYWORDS=VALUE;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;TRACE_LEVEL_FILE=0;"
+	/>
+
+	<Resource
+		name="jdbc/ibis4test-oracle-orcldb"
+		factory="org.apache.naming.factory.BeanFactory"
+		type="oracle.jdbc.xa.client.OracleXADataSource"
+		URL="jdbc:oracle:thin:@${jdbc.hostname:-localhost}:1521:ORCLCDB"
+		user="${testiaf_user/username:-testiaf_user}"
+		password="${testiaf_user/password:-testiaf_user00}"
 	/>
 
 	<Resource
 		name="jdbc/ibis4test-oracle"
-		type="javax.sql.DataSource"
-		driverClassName="oracle.jdbc.driver.OracleDriver"
-		url="jdbc:oracle:thin:@localhost:1521:xe"
-		username="testiaf_user"
-		password="testiaf_user"
-		maxActive="10"
-		maxIdle="2"
-		maxWait="5000"
+		factory="org.apache.naming.factory.BeanFactory"
+		type="oracle.jdbc.pool.OracleDataSource"
+		URL="jdbc:oracle:thin:@${jdbc.hostname:-localhost}:1521:XE"
+		user="${testiaf_user/username:-testiaf_user}"
+		password="${testiaf_user/password:-testiaf_user00}"
 	/>
 
 	<Resource
-		name="jdbc/ibis4test-oracle-docker"
+		name="jdbc/ibis4test-oracle-xa"
 		factory="org.apache.naming.factory.BeanFactory"
 		type="oracle.jdbc.xa.client.OracleXADataSource"
-		URL="jdbc:oracle:thin:@localhost:1521:ORCLCDB"
-		user="testiaf_user"
-		password="testiaf_user00"
+		URL="jdbc:oracle:thin:@${jdbc.hostname:-localhost}:1521:XE"
+		user="${testiaf_user/username:-testiaf_user}"
+		password="${testiaf_user/password:-testiaf_user00}"
 	/>
 
-	<Resource 
-		name="jdbc/ibis4test-mssql" 
-		auth="Container" 
+	<Resource
+		name="jdbc/ibis4test-mssql"
+		auth="Container"
 		factory="org.apache.naming.factory.BeanFactory"
 		type="com.microsoft.sqlserver.jdbc.SQLServerXADataSource"
-		URL="jdbc:sqlserver://localhost:1433;database=testiaf"
-		user="testiaf_user"
-		password="testiaf_user00"
+		URL="jdbc:sqlserver://${jdbc.hostname:-localhost}:1433;database=testiaf"
+		user="${testiaf_user/username:-testiaf_user}"
+		password="${testiaf_user/password:-testiaf_user00}"
 		sendStringParametersAsUnicode="false"
 		sendTimeAsDatetime="true"
 		selectMethod="direct"
@@ -58,91 +59,149 @@
 		applicationIntent="readwrite"
 	/>
 
-
+	<!-- serverTimezone is set for docker instances -->
 	<Resource
 		name="jdbc/ibis4test-mysql"
 		factory="org.apache.naming.factory.BeanFactory"
 		type="com.mysql.cj.jdbc.MysqlXADataSource"
-		url="jdbc:mysql://localhost:3307/testiaf"
-		user="testiaf_user"
-		password="testiaf_user00"
+		URL="jdbc:mysql://${jdbc.hostname:-localhost}:3307/testiaf"
+		user="${testiaf_user/username:-testiaf_user}"
+		password="${testiaf_user/password:-testiaf_user00}"
 		sslMode="DISABLED"
+		serverTimezone="Europe/Amsterdam"
 		allowPublicKeyRetrieval="true"
 		pinGlobalTxToPhysicalConnection="true"
 		socketTimeout="5000"
 	/>
 
- 	<!-- pinGlobalTxToPhysicalConnection appears to be required to avoid locking problems under XA -->
-
-	<!-- Use MySQL driver for MariaDB for proper XA support. -->
-	<Resource
-		name="jdbc/ibis4test-mariadb"
-		factory="org.apache.naming.factory.BeanFactory"
-		type="com.mysql.cj.jdbc.MysqlXADataSource"
-		url="jdbc:mysql://localhost:3306/testiaf"
-		user="testiaf_user"
-		password="testiaf_user00"
-		sslMode="DISABLED"
-		allowPublicKeyRetrieval="true"
-		pinGlobalTxToPhysicalConnection="true"
-		socketTimeout="5000"
-	/>
-<!-- 
 	<Resource
 		name="jdbc/ibis4test-mariadb"
 		factory="org.apache.naming.factory.BeanFactory"
 		type="org.mariadb.jdbc.MariaDbDataSource"
-		user="testiaf_user"
-		password="testiaf_user00"
-		url="jdbc:mariadb://${databaseHost}:3306/testiaf?pinGlobalTxToPhysicalConnection=true"
+		user="${testiaf_user/username:-testiaf_user}"
+		password="${testiaf_user/password:-testiaf_user00}"
+		url="jdbc:mariadb://${jdbc.hostname:-localhost}:3306/testiaf"
 	/>
- -->
- 	<!-- pinGlobalTxToPhysicalConnection does not work the same for mariadb as it does for mysql, therefor still locking problems under XA for mariadb -->
-	
 
-	<Resource 
-		name="jdbc/ibis4test-postgres-xa" 
+	<Resource
+		name="jdbc/ibis4test-postgres-xa"
 		factory="org.apache.naming.factory.BeanFactory"
-		type="org.postgresql.xa.PGXADataSource" 
-		url="jdbc:postgresql://${databaseHost}:5432/testiaf"
-		user="testiaf_user" 
-		password="testiaf_user00" 
+		type="org.postgresql.xa.PGXADataSource"
+		URL="jdbc:postgresql://${jdbc.hostname:-localhost}:5432/testiaf"
+		user="${testiaf_user/username:-testiaf_user}"
+		password="${testiaf_user/password:-testiaf_user00}"
 	/>
 
- 	<Resource name="jdbc/ibis4test-postgres" auth="Container"
-		type="javax.sql.DataSource" 
-		driverClassName="org.postgresql.Driver"
-		url="jdbc:postgresql://${databaseHost}:5432/testiaf"
-		username="testiaf_user"
-		password="testiaf_user00" 
-		maxActive="20" maxIdle="10" maxWait="5000" 
-	/>	
-		
+	<!-- Add Postgres non-XA/normal DataSource to tests without a TransactionManager -->
+	<Resource name="jdbc/ibis4test-postgres" auth="Container"
+			  type="javax.sql.DataSource"
+			  driverClassName="org.postgresql.Driver"
+			  url="jdbc:postgresql://${jdbc.hostname:-localhost}:5432/testiaf"
+			  username="${testiaf_user/username:-testiaf_user}"
+			  password="${testiaf_user/password:-testiaf_user00}"
+			  maxTotal="10"
+			  maxWaitMillis="5000"
+	/>
+
+	<Resource name="jdbc/ibis4test-db2-xa" auth="Container"
+		factory="org.apache.naming.factory.BeanFactory"
+		type="com.ibm.db2.jcc.DB2XADataSource"
+		serverName="${jdbc.hostname:-localhost}"
+		portNumber="50000"
+		databaseName="testiaf"
+		driverType="4"
+		user="${testiaf_user/username:-testiaf_user}"
+		password="${testiaf_user/password:-testiaf_user00}"
+	/>
+
+	<!-- Add DB2 non-XA/normal DataSource to tests without a TransactionManager -->
+	<Resource name="jdbc/ibis4test-db2" auth="Container"
+		factory="org.apache.naming.factory.BeanFactory"
+		type="com.ibm.db2.jcc.DB2SimpleDataSource"
+		serverName="${jdbc.hostname:-localhost}"
+		portNumber="50000"
+		databaseName="testiaf"
+		driverType="4"
+		user="${testiaf_user/username:-testiaf_user}"
+		password="${testiaf_user/password:-testiaf_user00}"
+	/>
+
+	<Resource
+		name="mongodb/ibis4test"
+		type="com.mongodb.MongoClient"
+		factory="com.mongodb.client.MongoClientFactory"
+		connectionString="mongodb://mongodb:27017"
+		auth="Container"
+		singleton="true"
+	/>
+
+
+	<!-- Tibco credentials can be set here via 'userName' and 'userPassword' attributes, or in the jmsRealm via authAlias (not via username and password) -->
 	<Resource
 		name="jms/qcf_tibco_esb_ff"
-		factory="org.apache.naming.factory.BeanFactory"
-		type="com.tibco.tibjms.TibjmsXAQueueConnectionFactory"
-		serverUrl="${qcf_tibco_esb_ff.serverUrl}"
-		userName="${qcf_tibco_esb_ff.userName}"
-		userPassword="${qcf_tibco_esb_ff.userPassword}"
-		SSLVendor="j2se"
+		factory="org.frankframework.jndi.TomcatJndiProxy"
+
+		delegate_name="SLXHP_Queue_ConnectionFactory"
+		delegate_jndiProperties="TibcoJndi.properties"
+		delegate_providerURL="tibjmsnaming://DEVESBLARGEDC1:37243,tibjmsnaming://DEVESBLARGEDC2:37243"
+
+		userName="IBIS_AWS_POC_USER"
+		userPassword="xxxxxxxxx"
 		SSLEnableVerifyHost="false"
-		SSLEnableVerifyHostName="false"
-		SSLTrace="false"
-		SSLDebugTrace="false"
 	/>
 	<Resource
 		name="jms/qcf_tibco_esb_rr"
-		factory="org.apache.naming.factory.BeanFactory"
-		type="com.tibco.tibjms.TibjmsQueueConnectionFactory"
-		serverUrl="${qcf_tibco_esb_rr.serverUrl}"
-		userName="${qcf_tibco_esb_rr.userName}"
-		userPassword="${qcf_tibco_esb_rr.userPassword}"
-		SSLVendor="j2se"
+		factory="org.frankframework.jndi.TomcatJndiProxy"
+
+		delegate_name="SLNHN_Queue_ConnectionFactory"
+		delegate_jndiProperties="TibcoJndi.properties"
+		delegate_providerURL="tibjmsnaming://DEVESBSMALLDC1:37243,tibjmsnaming://DEVESBSMALLDC2:37243"
+
+		userName="IBIS_AWS_POC_USER"
+		userPassword="xxxxxxxxx"
 		SSLEnableVerifyHost="false"
-		SSLEnableVerifyHostName="false"
-		SSLTrace="false"
-		SSLDebugTrace="false"
 	/>
-	
+
+	<Resource
+		name="jms/GetMessageRequest"
+		factory="org.frankframework.jndi.TomcatJndiProxy"
+
+		delegate_name="ESB.Infrastructure.TS.Test.TestIAF.1.GetMessage.1.Request"
+		delegate_jndiProperties="TibcoJndi.properties"
+		delegate_providerURL="tibjmsnaming://DEVESBSMALLDC1:37243,tibjmsnaming://DEVESBSMALLDC2:37243"
+	/>
+
+	<Resource
+		name="jms/UpdateMessageAction"
+		factory="org.frankframework.jndi.TomcatJndiProxy"
+
+		delegate_name="ESB.Infrastructure.TS.Test.TestIAF.1.UpdateMessage.1.Action"
+		delegate_jndiProperties="TibcoJndi.properties"
+		delegate_providerURL="tibjmsnaming://DEVESBLARGEDC1:37243,tibjmsnaming://DEVESBLARGEDC2:37243"
+	/>
+
+	<Resource name="jms/qcf-activemq"
+		factory="org.apache.naming.factory.BeanFactory"
+		type="org.apache.activemq.ActiveMQXAConnectionFactory"
+		brokerURL="tcp://${jms.hostname:-localhost}:61616?jms.xaAckMode=1"
+	/>
+
+	<!-- Activemq-artemis resource configuration -->
+	<Resource name="jms/qcf-artemis"
+		factory="org.apache.naming.factory.BeanFactory"
+		type="org.apache.activemq.artemis.jms.client.ActiveMQXAConnectionFactory"
+		brokerURL="tcp://${jms.hostname:-localhost}:61615"
+	/>
+
+	<!-- AWS SQS resource configuration -->
+	<!-- The queues configured in the queues attribute will be created if they do not exist -->
+	<Resource name="jms/qcf-aws_sqs"
+		factory="org.frankframework.jms.AmazonSqsFactory"
+		type="jakarta.jms.ConnectionFactory"
+
+		region="eu-west-1"
+		authAlias="aws"
+
+		queues="i4testiaf_ff,i4testiaf_in,i4testiaf_out"
+	/>
 </Context>

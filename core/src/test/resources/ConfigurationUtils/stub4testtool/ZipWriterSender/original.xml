@@ -1,0 +1,25 @@
+<configuration>
+	<adapter name="ZipWriterSender">
+		<receiver name="ZipWriterSender">
+			<listener
+				className="org.frankframework.receivers.JavaListener"
+				name="ZipWriterSender"
+			/>
+		</receiver>
+
+		<pipeline>
+			<exits>
+				<exit path="READY" state="success"/>
+			</exits>
+			<pipe
+				name="Call Sender"
+				className="org.frankframework.pipes.SenderPipe"
+				>
+				<sender
+					className="org.frankframework.compression.ZipWriterSender"
+				/>
+				<forward name="success" path="READY"/>
+			</pipe>
+		</pipeline>
+	</adapter>
+</configuration>

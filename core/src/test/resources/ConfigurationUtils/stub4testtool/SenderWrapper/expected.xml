@@ -1,0 +1,29 @@
+<configuration>
+	  <adapter name="SenderWrapper">
+      <receiver name="testtool-SenderWrapper">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-SenderWrapper"/>
+      </receiver>
+		    <receiver name="SenderWrapper">
+			      <listener className="org.frankframework.receivers.JavaListener"
+                   name="SenderWrapper"/>
+		    </receiver>
+      <receiver name="testtool-SenderWrapper-1">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-SenderWrapper-1"/>
+      </receiver>
+
+		    <pipeline>
+			      <exits>
+				        <exit path="READY" state="success"/>
+			      </exits>
+			      <pipe name="Call Sender"
+               className="org.frankframework.senders.SenderWrapper">
+				        <sender className="org.frankframework.senders.ParallelSenders">
+					          <sender className="org.frankframework.senders.EchoSender"/>
+				        </sender>
+				        <forward name="success" path="READY"/>
+			      </pipe>
+		    </pipeline>
+	  </adapter>
+</configuration>

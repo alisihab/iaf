@@ -1,0 +1,85 @@
+{
+    "securityRoles": [
+        {
+            "name": "IbisObserver",
+            "allowed": false
+        },
+        {
+            "name": "IbisAdmin",
+            "allowed": false
+        },
+        {
+            "name": "IbisDataAdmin",
+            "allowed": false
+        },
+        {
+            "name": "IbisTester",
+            "allowed": true
+        },
+        {
+            "name": "IbisWebService",
+            "allowed": false
+        }
+    ],
+	"supportedConnectionOptions": {
+		"cyphers": [
+			"IGNORE"
+		],
+		"protocols": [
+			"IGNORE"
+		]
+	},
+    "datasources": [
+        {
+            "datasourceName": "jdbc/testconfiguration",
+            "connectionPoolProperties": "DBCP2 Pool Info: maxIdle [8], minIdle [0], maxTotal [8], numActive [0], numIdle [0], testOnBorrow [false], testOnCreate [false], testOnReturn [false], testWhileIdle [false], removeAbandonedOnBorrow [false], removeAbandonedOnMaintenance [false], removeAbandonedTimeoutDuration [PT596523H14M7S]",
+            "info": "targetDataSource [org.frankframework.jdbc.datasource.OpenPoolingDataSource]"
+        }
+    ],
+    "authEntries": [
+        {
+            "password": "*********",
+            "alias": "alias1",
+            "username": "username1"
+        },
+        {
+            "password": "************",
+            "alias": "alias2",
+            "username": null
+        },
+        {
+            "password": "*** ERROR ***",
+            "alias": "test",
+            "username": "*** ERROR ***"
+        }
+    ],
+    "jmsRealms": [
+        {
+            "name": "dummyJmsRealm1",
+            "datasourceName": "dummyDatasourceName",
+			"info": null
+        },
+        {
+            "queueConnectionFactoryName": "dummyQCF",
+            "name": "dummyJmsRealm2",
+            "info": null
+        }
+    ],
+    "sapSystems": [
+    ],
+    "xmlComponents": {
+        "SAXParserFactory-class": "org.apache.xerces.jaxp.SAXParserFactoryImpl",
+        "DocumentBuilderFactory1-class": "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl",
+        "DocumentBuilderFactory2-class": "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl",
+        "TransformerFactory1-class": "org.apache.xalan.processor.TransformerFactoryImpl",
+        "TransformerFactory2-class": "net.sf.saxon.TransformerFactoryImpl",
+        "XMLEventFactory-class": "org.apache.xerces.stax.XMLEventFactoryImpl",
+        "XMLInputFactory-class": "org.frankframework.xml.StaxParserFactory",
+        "XMLOutputFactory-class": "com.sun.xml.stream.ZephyrWriterFactory",
+        "MessageFactory-class": "com.sun.xml.messaging.saaj.soap.dynamic.SOAPMessageFactoryDynamicImpl",
+        "Xerces-Version": "Xerces-J 2.12.2-xml-schema-1.1",
+        "Xalan-Version": "Xalan Java 2.7.3",
+        "Saxon-Version": "SAXON-HE 10.9J from Saxonica",
+        "Woodstox-Version": "woodstox 5.0; xml1.1 enabled"
+    }
+}

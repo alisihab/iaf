@@ -1,0 +1,30 @@
+<configuration>
+	  <adapter name="CommandSender">
+      <receiver name="testtool-CommandSender">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-CommandSender"/>
+      </receiver>
+		    <receiver name="CommandSender">
+			      <listener className="org.frankframework.receivers.JavaListener"
+                   name="CommandSender"/>
+		    </receiver>
+      <receiver name="testtool-CommandSender-1">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-CommandSender-1"/>
+      </receiver>
+
+		    <pipeline>
+			      <exits>
+				        <exit path="READY" state="success"/>
+			      </exits>
+			      <pipe name="Call Sender"
+               className="org.frankframework.pipes.SenderPipe"
+               timeoutOnResult="[timeout]"
+               exceptionOnResult="[error]">
+				        <sender className="org.frankframework.senders.CommandSender"
+                    command="echo hello"/>
+				        <forward name="success" path="READY"/>
+			      </pipe>
+		    </pipeline>
+	  </adapter>
+</configuration>

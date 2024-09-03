@@ -1,0 +1,95 @@
+<module>
+
+	<adapter name="ForwardNameSelectable">
+		<receiver>
+			<listener className="org.frankframework.receivers.JavaListener" serviceName="ibis4test-ForwardNameSelectable"/>
+		</receiver>
+		<pipeline>
+			<XmlSwitchPipe name="SenderSelector" xpathExpression="*/@sender">
+				<forward name="IbisLocalSender" path="Call ForwardNameSelectable Child Adapter via IbisLocalSender"/>
+				<forward name="HttpSender" path="Call ForwardNameSelectable Child Adapter via HttpSender"/>
+			</XmlSwitchPipe>
+
+			<SenderPipe name="Call ForwardNameSelectable Child Adapter via IbisLocalSender">
+				<IbisLocalSender javaListener="ibis4test-ForwardNameSelectable-Child"/>
+				<forward name="200" path="fwd200"/>
+				<forward name="400" path="fwd400"/>
+				<Forward name="exception" path="FwdException"/>
+			</SenderPipe>
+
+			<ReplacerPipe name="fall through IbisLocal"
+				getInputFromFixedValue="fall through IbisLocal: [?{result}]">
+				<param name="result" sessionKey="originalMessage"/>
+				<forward name="success" path="READY"/>
+			</ReplacerPipe>
+
+			<SenderPipe name="Call ForwardNameSelectable Child Adapter via HttpSender">
+				<HttpSender>
+					<Param name="url" xpathExpression="*/@url"/>
+				</HttpSender>
+				<Forward name="200" path="fwd200"/>
+				<Forward name="400" path="fwd400"/>
+				<Forward name="exception" path="FwdException"/>
+			</SenderPipe>
+
+			<PutInSessionPipe name="fall through" sessionKey="incomingMessage"/>
+			<ReplacerPipe name="fall through Http" getInputFromFixedValue="fall through Http: [?{message}]">
+				<param name="message" sessionKey="incomingMessage"/>
+				<forward name="success" path="READY"/>
+			</ReplacerPipe>
+
+			<PutInSessionPipe name="fwd200" sessionKey="incomingMessage"/>
+			<ReplacerPipe name="fwd200Replacer" getInputFromFixedValue="fwd200: [?{message}]">
+				<param name="message" sessionKey="incomingMessage"/>
+				<forward name="success" path="READY"/>
+			</ReplacerPipe>
+
+			<PutInSessionPipe name="fwd400" sessionKey="incomingMessage"/>
+			<ReplacerPipe name="fwd400Replacer" getInputFromFixedValue="fwd400: [?{message}]">
+				<param name="message" sessionKey="incomingMessage"/>
+				<forward name="success" path="READY"/>
+			</ReplacerPipe>
+
+			<PutInSessionPipe name="FwdException" sessionKey="incomingMessage"/>
+			<ReplacerPipe name="FwdExceptionReplacer" getInputFromFixedValue="FwdException: [?{message}]">
+				<param name="message" sessionKey="incomingMessage"/>
+				<forward name="success" path="READY"/>
+			</ReplacerPipe>
+		</pipeline>
+	</adapter>
+
+	<Adapter name="ForwardNameSelectable Child Adapter - IbisLocal">
+		<Receiver>
+			<JavaListener name="ibis4test-ForwardNameSelectable-Child"/>
+		</Receiver>
+		<Pipeline>
+			<Exits>
+				<Exit name="ExitS0" state="success"/>
+				<Exit name="ExitS200" state="success" code="200"/>
+				<Exit name="ExitS201" state="success" code="201"/>
+				<Exit name="ExitE0" state="ERROR"/>
+				<Exit name="ExitE400" state="ERROR" code="400"/>
+				<Exit name="ExitE500" state="ERROR" code="500"/>
+			</Exits>
+			<XmlSwitchPipe name="exitSelector" xpathExpression="*/@path"/>
+		</Pipeline>
+	</Adapter>
+
+	<Adapter name="ForwardNameSelectable Child Adapter - HttpSender target">
+		<Receiver>
+			<ApiListener uriPattern="/statuscodeselectable/{exit}"/>
+		</Receiver>
+		<Pipeline>
+			<Exits>
+				<Exit name="Exit200" state="success" code="200"/>
+				<Exit name="Exit201" state="success" code="201"/>
+				<Exit name="Exit400" state="success" code="400"/>
+				<Exit name="Exit500" state="success" code="500"/>
+			</Exits>
+			<ReplacerPipe name="httpservice" getInputFromFixedValue="statuscodeselectable: [?{exit}]">
+				<param name="exit" sessionKey="exit"/>
+			</ReplacerPipe>
+			<XmlSwitchPipe name="exitXmlSwitch" sessionKey="exit"/>
+		</Pipeline>
+	</Adapter>
+</module>

@@ -4,18 +4,16 @@
 		description="Adapter for testing transaction handling, multiple adapters are being called with different transaction attributes"
 	>
 		<receiver
-			className="nl.nn.adapterframework.receivers.GenericReceiver"
 			transactionTimeout="2"
 			transactionAttribute="Required"
 		>
 			<listener
-				className="nl.nn.adapterframework.receivers.JavaListener"
+				className="org.frankframework.receivers.JavaListener"
 				name="TransactionHandlingMultiAdapter"
 				serviceName="ibis4test-TransactionHandlingMultiAdapter"
 			/>
-			<errorStorage className="nl.nn.adapterframework.jdbc.JdbcTransactionalStorage"
-				jmsRealm="jdbc" 
-				slotId="${applicationId}/GenericReceiverTransactionHandlingMultiAdapter"
+			<errorStorage className="org.frankframework.jdbc.JdbcTransactionalStorage"
+				slotId="${applicationId}/ReceiverTransactionHandlingMultiAdapter"
 			/>
 		</receiver>
 
@@ -28,19 +26,19 @@
 			<!-- This subadapter throws an exception -->
 			<!-- The outcome of this pipe should not influence the pipeline in any way since its not transacted-->
 			<pipe name="Send transacted message to not supported subadapter with exception"
-				className="nl.nn.adapterframework.pipes.GenericMessageSendingPipe"
+				className="org.frankframework.pipes.SenderPipe"
 				getInputFromFixedValue="tralala"
 			>
 				<sender
-					className="nl.nn.adapterframework.senders.IbisLocalSender"
+					className="org.frankframework.senders.IbisLocalSender"
 					javaListener="TransactionHandlingMultiAdapterNotSupportedThrowException"
 				/>
 				<forward name="success" path="fixedInsert"/>
 				<forward name="exception" path="fixedInsert"/>
 			</pipe>
 
-			<pipe name="fixedInsert" className="nl.nn.adapterframework.pipes.GenericMessageSendingPipe" transactionAttribute="Required">
-				<sender className="nl.nn.adapterframework.jdbc.FixedQuerySender" query="INSERT INTO IBISPROP (NAME,VALUE,LASTMODDATE,LASTMODBY) VALUES ('LASTNAME',?,NULL,NULL)" queryType="insert" jmsRealm="jdbc">
+			<pipe name="fixedInsert" className="org.frankframework.pipes.SenderPipe" transactionAttribute="Required">
+				<sender className="org.frankframework.jdbc.FixedQuerySender" query="INSERT INTO IBISPROP (NAME,VALUE,LASTMODDATE,LASTMODBY) VALUES ('LASTNAME',?,NULL,NULL)">
 					<param name="value" value="test1" />
 				</sender>
 				<forward name="success" path="Send transacted message to required subadapter with exception" />
@@ -48,25 +46,25 @@
 
 			<!-- This subadapter throws an exception -->
 			<pipe name="Send transacted message to required subadapter with exception"
-				className="nl.nn.adapterframework.pipes.GenericMessageSendingPipe"
+				className="org.frankframework.pipes.SenderPipe"
 				getInputFromFixedValue="tralala"
 			>
 				<sender
-					className="nl.nn.adapterframework.senders.IbisLocalSender"
+					className="org.frankframework.senders.IbisLocalSender"
 					javaListener="TransactionHandlingMultiAdapterRequiredThrowException"
 				/>
 				<forward name="success" path="fixedInsertRollback2"/>
 				<forward name="exception" path="fixedInsertRollback2"/>
 			</pipe>
 
-			<pipe name="fixedInsertRollback2" className="nl.nn.adapterframework.pipes.GenericMessageSendingPipe">
-				<sender className="nl.nn.adapterframework.jdbc.FixedQuerySender" query="INSERT INTO IBISPROP (NAME,VALUE,LASTMODDATE,LASTMODBY) VALUES ('SURNAME',?,NULL,NULL)" queryType="insert" jmsRealm="jdbc" />
+			<pipe name="fixedInsertRollback2" className="org.frankframework.pipes.SenderPipe">
+				<sender className="org.frankframework.jdbc.FixedQuerySender" query="INSERT INTO IBISPROP (NAME,VALUE,LASTMODDATE,LASTMODBY) VALUES ('SURNAME',?,NULL,NULL)" />
 				<forward name="success" path="this should fail because of a tx error" />
 			</pipe>
 
-			<pipe name="this should fail because of a tx error" className="nl.nn.adapterframework.pipes.EchoPipe"
+			<pipe name="this should fail because of a tx error" className="org.frankframework.pipes.EchoPipe"
 				getInputFromFixedValue="&lt;transacted&gt;exception&lt;/transacted&gt;">
-				
+
 				<forward name="success" path="EXIT"/>
 			</pipe>
 		</pipeline>
@@ -77,11 +75,10 @@
 		description="First SubAdapter for Transaction Handling">
 
 		<receiver
-			className="nl.nn.adapterframework.receivers.GenericReceiver"
 			transactionAttribute="NotSupported"
 		>
-			<listener 
-				className="nl.nn.adapterframework.receivers.JavaListener"
+			<listener
+				className="org.frankframework.receivers.JavaListener"
 				name="TransactionHandlingMultiAdapterNotSupportedThrowException"
 			/>
 		</receiver>
@@ -92,7 +89,7 @@
 				<exit path="EXCEPTION" state="error" />
 			</exits>
 
-			<pipe name="Return Exception" className="nl.nn.adapterframework.pipes.ExceptionPipe"
+			<pipe name="Return Exception" className="org.frankframework.pipes.ExceptionPipe"
 				getInputFromFixedValue="&lt;transacted&gt;exception&lt;/transacted&gt;">
 
 				<forward name="success" path="EXIT"/>
@@ -106,11 +103,10 @@
 		description="First SubAdapter for Transaction Handling">
 
 		<receiver
-			className="nl.nn.adapterframework.receivers.GenericReceiver"
 			transactionAttribute="Required"
 		>
-			<listener 
-				className="nl.nn.adapterframework.receivers.JavaListener"
+			<listener
+				className="org.frankframework.receivers.JavaListener"
 				name="TransactionHandlingMultiAdapterRequiredThrowException"
 			/>
 		</receiver>
@@ -121,7 +117,7 @@
 				<exit path="EXCEPTION" state="error" />
 			</exits>
 
-			<pipe name="Return Exception" className="nl.nn.adapterframework.pipes.ExceptionPipe"
+			<pipe name="Return Exception" className="org.frankframework.pipes.ExceptionPipe"
 				getInputFromFixedValue="&lt;transacted&gt;exception&lt;/transacted&gt;">
 
 				<forward name="success" path="EXIT"/>

@@ -14,13 +14,16 @@
                         <name>tchar</name>
                     </column>
                     <column>
-                        <name>tvarchar</name>
+                        <name>tclob</name>
                     </column>
                     <column>
                         <name>tnumber</name>
                     </column>
+                    <column>
+                        <name>tvarchar</name>
+                    </column>
                 </columns>
-                <where>tnumber=<xsl:value-of select="$tnumber"/></where>
+                <where>tnumber=<xsl:value-of select="$tnumber"/> and tchar!='1' and tchar!='8'</where> <!-- avoid 'inProcess' records -->
                 <order>tkey</order>
             </select>
             <select>

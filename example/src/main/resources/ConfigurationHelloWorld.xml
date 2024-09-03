@@ -1,19 +1,28 @@
 <module>
 	<adapter name="HelloWorld" active="${HelloWorld.active}">
 		<receiver name="HelloWorld" >
+			<!-- This listener is used when the API is called as specified in OpenAPI 3.0 at the Webservices page -->
 			<listener
 				name="HelloWorld"
-				className="nl.nn.adapterframework.receivers.JavaListener"
+				className="org.frankframework.http.rest.ApiListener"
+				uriPattern="hello-world"
+			/>
+		</receiver>
+		<receiver name="HelloWorld">
+			<!-- This listener is used by the scheduler and IbisLocalSender in adapter HelloWorlds  -->
+			<listener
+				name="HelloWorld"
+				className="org.frankframework.receivers.JavaListener"
 			/>
 		</receiver>
 		<pipeline firstPipe="HelloWorld">
 			<exits>
-				<exit path="EXIT" state="success"/>
+				<exit name="EXIT" state="success"/>
 			</exits>
 			<pipe
 				name="HelloWorld"
-				className="nl.nn.adapterframework.pipes.FixedResult"
-				returnString="Hello World"
+				className="org.frankframework.pipes.EchoPipe"
+				getInputFromFixedValue="Hello World"
 				>
 				<forward name="success" path="EXIT"/>
 			</pipe>
@@ -22,8 +31,7 @@
 	<scheduler>
 		<job
 			name="HelloWorld"
-			adapterName="HelloWorld"
-			receiverName="HelloWorld"
+			javaListener="HelloWorld"
 			interval="0"
 			function="sendMessage"
 			active="${HelloWorld.job.active}"
@@ -33,21 +41,20 @@
 		<receiver name="HelloUniverse" >
 			<listener
 				name="HelloUniverse"
-				className="nl.nn.adapterframework.receivers.JavaListener"
+				className="org.frankframework.receivers.JavaListener"
 			/>
-			<errorStorage className="nl.nn.adapterframework.jdbc.JdbcTransactionalStorage"
-				jmsRealm="jdbc" slotId="${instance.name}/HelloUniverse_In" />
+			<errorStorage className="org.frankframework.jdbc.JdbcTransactionalStorage"
+				slotId="${instance.name}/HelloUniverse_In" />
 		</receiver>
 		<pipeline firstPipe="HelloUniverse">
 			<exits>
-				<exit path="EXIT" state="success"/>
+				<exit name="EXIT" state="success"/>
 			</exits>
 			<pipe name="HelloUniverse"
-				className="nl.nn.adapterframework.pipes.GenericMessageSendingPipe">
-				<sender className="nl.nn.adapterframework.senders.FixedResultSender"
+				className="org.frankframework.pipes.SenderPipe">
+				<sender className="org.frankframework.senders.FixedResultSender"
 					returnString="Hello, Universe!" />
-   				<messageLog className="nl.nn.adapterframework.jdbc.JdbcTransactionalStorage" 
-					jmsRealm="jdbc" 
+			<messageLog className="org.frankframework.jdbc.JdbcTransactionalStorage"
 					slotId="${instance.name}/HelloUniverse_Out" />
 				<forward name="success" path="EXIT" />
 			</pipe>

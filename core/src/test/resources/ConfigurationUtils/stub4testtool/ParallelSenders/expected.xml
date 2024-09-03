@@ -1,0 +1,32 @@
+<configuration>
+	  <adapter name="ParallelSenders">
+      <receiver name="testtool-ParallelSenders">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-ParallelSenders"/>
+      </receiver>
+		    <receiver name="ParallelSenders">
+			      <listener className="org.frankframework.receivers.JavaListener"
+                   name="ParallelSenders"/>
+		    </receiver>
+      <receiver name="testtool-ParallelSenders-1">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-ParallelSenders-1"/>
+      </receiver>
+
+		    <pipeline>
+			      <exits>
+				        <exit path="READY" state="success"/>
+			      </exits>
+			      <pipe name="Call Sender"
+               className="org.frankframework.pipes.SenderPipe"
+               timeoutOnResult="[timeout]"
+               exceptionOnResult="[error]">
+				        <sender className="org.frankframework.senders.ParallelSenders">
+					          <sender className="org.frankframework.senders.EchoSender"/>
+					          <sender className="org.frankframework.senders.EchoSender"/>
+				        </sender>
+				        <forward name="success" path="READY"/>
+			      </pipe>
+		    </pipeline>
+	  </adapter>
+</configuration>

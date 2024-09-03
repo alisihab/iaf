@@ -1,0 +1,29 @@
+<configuration>
+	  <adapter name="DelaySender">
+      <receiver name="testtool-DelaySender">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-DelaySender"/>
+      </receiver>
+		    <receiver name="DelaySender">
+			      <listener className="org.frankframework.receivers.JavaListener"
+                   name="DelaySender"/>
+		    </receiver>
+      <receiver name="testtool-DelaySender-1">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-DelaySender-1"/>
+      </receiver>
+
+		    <pipeline>
+			      <exits>
+				        <exit path="READY" state="success"/>
+			      </exits>
+			      <pipe name="Call Sender"
+               className="org.frankframework.pipes.SenderPipe"
+               timeoutOnResult="[timeout]"
+               exceptionOnResult="[error]">
+				        <sender className="org.frankframework.senders.DelaySender" delayTime="5"/>
+				        <forward name="success" path="READY"/>
+			      </pipe>
+		    </pipeline>
+	  </adapter>
+</configuration>

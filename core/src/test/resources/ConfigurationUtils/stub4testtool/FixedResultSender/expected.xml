@@ -1,0 +1,30 @@
+<configuration>
+	  <adapter name="FixedResultSender">
+      <receiver name="testtool-FixedResultSender">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-FixedResultSender"/>
+      </receiver>
+		    <receiver name="FixedResultSender">
+			      <listener className="org.frankframework.receivers.JavaListener"
+                   name="FixedResultSender"/>
+		    </receiver>
+      <receiver name="testtool-FixedResultSender-1">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-FixedResultSender-1"/>
+      </receiver>
+
+		    <pipeline>
+			      <exits>
+				        <exit path="READY" state="success"/>
+			      </exits>
+			      <pipe name="Call Sender"
+               className="org.frankframework.pipes.SenderPipe"
+               timeoutOnResult="[timeout]"
+               exceptionOnResult="[error]">
+				        <sender className="org.frankframework.senders.FixedResultSender"
+                    returnString="TEST"/>
+				        <forward name="success" path="READY"/>
+			      </pipe>
+		    </pipeline>
+	  </adapter>
+</configuration>

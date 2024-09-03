@@ -1,0 +1,31 @@
+<configuration>
+	  <adapter name="FixedQuerySender">
+      <receiver name="testtool-FixedQuerySender">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-FixedQuerySender"/>
+      </receiver>
+		    <receiver name="FixedQuerySender">
+			      <listener className="org.frankframework.receivers.JavaListener"
+                   name="FixedQuerySender"/>
+		    </receiver>
+      <receiver name="testtool-FixedQuerySender-1">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-FixedQuerySender-1"/>
+      </receiver>
+
+		    <pipeline>
+			      <exits>
+				        <exit path="READY" state="success"/>
+			      </exits>
+			      <pipe name="Call Sender"
+               className="org.frankframework.pipes.SenderPipe"
+               timeoutOnResult="[timeout]"
+               exceptionOnResult="[error]">
+				        <sender className="org.frankframework.jdbc.FixedQuerySender"
+                    queryType="select"
+                    query="SELECT TKEY, TCLOB FROM IBISTEMP WHERE TCHAR = '1' AND TNUMBER=${jdbc.querylistener.key}"/>
+				        <forward name="success" path="READY"/>
+			      </pipe>
+		    </pipeline>
+	  </adapter>
+</configuration>

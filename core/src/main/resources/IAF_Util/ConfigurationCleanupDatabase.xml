@@ -5,9 +5,9 @@
 			cronExpression="${cleanup.database.cron}"
 			description="Cleanup the database (IbisLock and IbisStore)"
 			function="cleanupDatabase"
+			active="${cleanup.database.active}"
 		>
 			<locker
-				datasourceName="${jdbc.datasource.default}"
 				objectId="CleanupDatabase"
 				ignoreTableNotExist="true"
 			/>

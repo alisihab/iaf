@@ -1,25 +1,19 @@
-<!DOCTYPE configuration [
-	<!ENTITY TransactionTimeoutHandling SYSTEM "./TransactionTimeoutHandling.xml">
-	<!ENTITY TransactionTimeoutFxfListener SYSTEM "./TransactionTimeoutFxfListener.xml">
+<Configuration>
+	<Include ref="TransactionTimeoutHandling.xml"/>
+	<Include ref="TransactionTimeoutFxfListener.xml"/>
 
-	<!ENTITY TransactionHandlingMandatorySubAdapter SYSTEM "./TransactionHandlingMandatorySubAdapter.xml">
-	<!ENTITY TransactionHandlingNotSupportedSubAdapter SYSTEM "./TransactionHandlingNotSupportedSubAdapter.xml">
+	<Include ref="TransactionHandlingMandatorySubAdapter.xml"/>
+	<Include ref="TransactionHandlingNotSupportedSubAdapter.xml"/>
 
-	<!ENTITY TransactionHandlingNotSupportedSubAdapterException SYSTEM "./TransactionHandlingNotSupportedSubAdapterException.xml">
-	<!ENTITY TransactionHandlingRequiredSubAdapterException SYSTEM "./TransactionHandlingRequiredSubAdapterException.xml">
+	<Include ref="TransactionHandlingNotSupportedSubAdapterException.xml"/>
+	<Include ref="TransactionHandlingRequiredSubAdapterException.xml"/>
 
-	<!ENTITY TransactionHandlingMultiAdapter SYSTEM "./TransactionHandlingMultiAdapter.xml">
-]>
+	<Include ref="TransactionHandlingMultiAdapter.xml"/>
+	<Include ref="TransactionHandlingMultiThread.xml"/>
 
-<configuration name="TX">
-	&TransactionTimeoutHandling;
-	&TransactionTimeoutFxfListener;
+	<Include ref="TransactionFailureInDbPipe.xml"/>
+	<Include ref="TransactionFailureInNonDbPipe.xml"/>
+	<Include ref="TransactionFailureInNotSupportedDbPipe.xml"/>
 
-	&TransactionHandlingMandatorySubAdapter;
-	&TransactionHandlingNotSupportedSubAdapter;
-
-	&TransactionHandlingNotSupportedSubAdapterException;
-	&TransactionHandlingRequiredSubAdapterException;
-
-	&TransactionHandlingMultiAdapter;
-</configuration>
+	<Include ref="MonitorConfig.xml"/>
+</Configuration>

@@ -1,0 +1,13 @@
+<Configuration xsi:noNamespaceSchemaLocation="http://schemas.frankframework.org/ibisdoc.xsd" name="My first beautiful configuration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Adapter name="HelloBeautifulWorld" elementRole="adapter">
+		<Receiver name="HelloBeautifulWorld" elementRole="receiver">
+			<JavaListener name="HelloBeautifulWorld" elementRole="listener" className="org.frankframework.receivers.JavaListener"/>
+		</Receiver>
+		<Pipeline firstPipe="HelloBeautifulWorld" elementRole="pipeline">
+			<Exit path="EXIT" state="success" elementRole="exit"/>
+			<EchoPipe name="HelloBeautifulWorld" getInputFromFixedValue="Hello Beautiful World" elementRole="pipe" className="org.frankframework.pipes.EchoPipe">
+				<Forward name="success" path="EXIT" elementRole="forward"/>
+			</EchoPipe>
+		</Pipeline>
+	</Adapter>
+</Configuration>

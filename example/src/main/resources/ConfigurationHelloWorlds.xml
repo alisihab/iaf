@@ -1,64 +1,81 @@
 <module>
 	<adapter name="HelloWorlds" active="${HelloWorlds.active}">
 		<receiver name="HelloWorlds" >
+			<!-- This listener is used when the API is called as specified in OpenAPI 3.0 at the Webservices page -->
 			<listener
 				name="HelloWorlds"
-				className="nl.nn.adapterframework.receivers.JavaListener"
+				className="org.frankframework.http.rest.ApiListener"
+				uriPattern="hello-worlds"
+			/>
+		</receiver>
+		<receiver name="HelloWorlds">
+			<!-- This listener is used by the scheduler -->
+			<listener
+				name="HelloWorlds"
+				className="org.frankframework.receivers.JavaListener"
 			/>
 		</receiver>
 		<pipeline firstPipe="CheckInputIsXml">
 			<exits>
-				<exit path="EXIT" state="success"/>
+				<exit name="EXIT" state="success"/>
 			</exits>
 			<pipe
 				name="CheckInputIsXml"
-				className="nl.nn.adapterframework.pipes.XmlWellFormedChecker"
+				className="org.frankframework.pipes.XmlWellFormedChecker"
 				>
-				<forward name="success" path="HelloWorlds"/>
-				<forward name="failure" path="Text2Xml"/>
+				<forward name="success" path="CallHelloWorld"/>
+				<forward name="failure" path="ConvertEmptyMessageToDummyMessage"/>
 			</pipe>
+			<!-- Input will be null when called using the ApiListener and empty string when called by scheduler -->
+			<pipe
+				name="ConvertEmptyMessageToDummyMessage"
+				className="org.frankframework.pipes.EchoPipe"
+				emptyInputReplacement="Dummy"
+			/>
 			<pipe
 				name="Text2Xml"
-				className="nl.nn.adapterframework.pipes.Text2XmlPipe"
-				includeXmlDeclaration="false"
+				className="org.frankframework.pipes.Text2XmlPipe"
 				xmlTag="tests"
 				splitLines="true"
-				>
-				<forward name="success" path="RenameElementLineToTest"/>
-			</pipe>
+			/>
 			<pipe
 				name="RenameElementLineToTest"
-				className="nl.nn.adapterframework.pipes.XsltPipe"
+				className="org.frankframework.pipes.XsltPipe"
 				styleSheetName="HelloWorlds/xsl/RenameElementLineToTest.xsl"
+			/>
+			<pipe
+				name="CheckDummyMessage"
+				className="org.frankframework.pipes.XmlSwitch"
+				xpathExpression="/tests/test = 'Dummy'"
 				>
-				<forward name="success" path="CheckEmptyMessage"/>
+				<forward name="true" path="CreateExampleMessage"/>
+				<forward name="false" path="CallHelloWorld"/>
 			</pipe>
 			<pipe
-				name="CheckEmptyMessage"
-				className="nl.nn.adapterframework.pipes.CompareStringPipe"
+				name="CreateExampleMessage"
+				className="org.frankframework.pipes.EchoPipe"
+				getInputFromFixedValue="
+						First line
+						&#10;
+						Second line
+						&#10;
+						Third line
+						&#10;
+						Fourth line
+						"
 				>
-				<param name="operand1" value="&lt;tests/>"/>
-				<forward name="equals" path="CreateNewMessage"/>
-				<forward name="lessthan" path="HelloWorlds"/>
-				<forward name="greaterthan" path="HelloWorlds"/>
+				<forward name="success" path="Text2Xml"/>
 			</pipe>
 			<pipe
-				name="CreateNewMessage"
-				className="nl.nn.adapterframework.pipes.FixedResult"
-				returnString="&lt;tests>&lt;test>1&lt;/test>&lt;/tests>"
-				>
-				<forward name="success" path="HelloWorlds"/>
-			</pipe>
-			<pipe
-				name="HelloWorlds"
-				className="nl.nn.adapterframework.pipes.ForEachChildElementPipe"
+				name="CallHelloWorld"
+				className="org.frankframework.pipes.ForEachChildElementPipe"
 				blockSize="3"
 				blockPrefix="&lt;batch>"
 				blockSuffix="&lt;/batch>"
 				elementXPathExpression="/tests/test"
 				>
 				<sender
-					className="nl.nn.adapterframework.senders.IbisLocalSender"
+					className="org.frankframework.senders.IbisLocalSender"
 					javaListener="HelloWorld"
 				/>
 				<forward name="success" path="EXIT"/>
@@ -68,9 +85,8 @@
 	<scheduler>
 		<job
 			name="HelloWorlds"
-			adapterName="HelloWorlds"
-			receiverName="HelloWorlds"
 			cronExpression="0 55 2 * * ?"
+			javaListener="HelloWorlds"
 			function="sendMessage"
 			active="${HelloWorlds.active}"
 		/>

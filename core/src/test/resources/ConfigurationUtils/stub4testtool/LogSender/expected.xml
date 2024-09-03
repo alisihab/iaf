@@ -1,0 +1,29 @@
+<configuration>
+	  <adapter name="LogSender">
+      <receiver name="testtool-LogSender">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-LogSender"/>
+      </receiver>
+		    <receiver name="LogSender">
+			      <listener className="org.frankframework.receivers.JavaListener"
+                   name="LogSender"/>
+		    </receiver>
+      <receiver name="testtool-LogSender-1">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-LogSender-1"/>
+      </receiver>
+
+		    <pipeline>
+			      <exits>
+				        <exit path="READY" state="success"/>
+			      </exits>
+			      <pipe name="Call Sender"
+               className="org.frankframework.pipes.SenderPipe"
+               timeoutOnResult="[timeout]"
+               exceptionOnResult="[error]">
+				        <sender className="org.frankframework.senders.LogSender" logLevel="warn"/>
+				        <forward name="success" path="READY"/>
+			      </pipe>
+		    </pipeline>
+	  </adapter>
+</configuration>

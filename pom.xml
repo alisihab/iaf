@@ -1,238 +1,653 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.ibissource</groupId>
-	<artifactId>ibis-adapterframework-parent</artifactId>
-	<version>7.6-SNAPSHOT</version>
+	<groupId>org.frankframework</groupId>
+	<artifactId>frankframework-parent</artifactId>
+	<version>${revision}</version>
 	<packaging>pom</packaging>
 
 	<properties>
+		<revision>8.3.0-SNAPSHOT</revision>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<log4j2.version>2.13.1</log4j2.version>
+		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.source>17</maven.compiler.source>
+		<log4j2.version>2.23.1</log4j2.version>
+
+		<sonar.organization>frank-framework</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+
+		<junit.excludedTags></junit.excludedTags>
+		<junit.includedTags></junit.includedTags>
+
+		<jackson.version>2.17.2</jackson.version>
+		<cxf.version>4.0.5</cxf.version>
+		<spring.version>6.1.12</spring.version>
+		<spring-security.version>6.3.3</spring-security.version>
+		<spring-integration.version>6.3.3</spring-integration.version>
+		<spring.boot.version>3.3.3</spring.boot.version>
+		<tomcat.version>10.1.28</tomcat.version>
+		<bouncycastle.version>1.78.1</bouncycastle.version>
+
+		<narayana.version>7.0.2.Final</narayana.version>
+		<jboss-logging.version>3.6.0.Final</jboss-logging.version>
+		<micrometer.version>1.13.3</micrometer.version>
+		<argLine/> <!-- add empty default argLine so Surefire won't fail when JaCoCo isn't present -->
+		<!-- property [iaf.rootdir] is available to get the root of the project, because of the [directory-maven-plugin] -->
+		<frankdoc.version>3.2-SNAPSHOT</frankdoc.version>
+		<javadoc-plugin.version>3.10.0</javadoc-plugin.version>
+
+		<!-- DB Driver Versions -->
+		<h2.driver.version>2.3.232</h2.driver.version>
+		<db2.driver.version>11.5.9.0</db2.driver.version>
+		<oracle.driver.version>23.5.0.24.07</oracle.driver.version>
+		<oracle.driver.jdkversion>11</oracle.driver.jdkversion>
+		<mssql.driver.version>12.8.1.jre11</mssql.driver.version>
+		<mysql.driver.version>8.4.0</mysql.driver.version>
+		<!-- Should upgrade to new MariaDB driver 3.1.4, 3.2.0 or newer for JDK17 support but currently not working with XA transaction managers in the framework. -->
+		<mariadb.driver.version>3.4.1</mariadb.driver.version>
+		<postgresql.driver.version>42.7.4</postgresql.driver.version>
+		<mongodb.driver.version>4.11.3</mongodb.driver.version>
+
+		<!-- Other versions for building Docker images and running IAF-Test -->
+		<activemq.driver.version>6.1.3</activemq.driver.version>
+		<artemis.driver.version>2.37.0</artemis.driver.version>
+
+		<aws.java.sdk.version>2.27.2</aws.java.sdk.version>
+
+		<!-- Some test dependency versions -->
+		<mockito.version>5.13.0</mockito.version>
+		<junit.version>5.11.0</junit.version>
 	</properties>
 
-	<name>Ibis AdapterFramework parent</name>
-	<description>The Ibis Adapter Framework is an easy to use, stateless integration framework which allows (transactional) messages to be modified and exchanged between different systems.</description>
-	<url>http://maven.ibissource.org/iaf/</url>
+	<name>Frank!Framework parent</name>
+	<description>The Frank!Framework is an easy-to-use, stateless integration framework which allows (transactional) messages to be modified and exchanged between different systems.</description>
+	<url>https://frankframework.org</url>
 
 	<organization>
-		<name>Ibissource.org</name>
-		<url>https://ibissource.org</url>
+		<name>Frank!Framework</name>
+		<url>https://frankframework.org</url>
 	</organization>
 
 	<licenses>
 		<license>
 			<name>Apache License, Version 2.0</name>
 			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<distribution>manual</distribution>
+			<distribution>repo</distribution>
 		</license>
 	</licenses>
 
 	<developers>
 		<developer>
+			<name>Niels Meijer</name>
+			<email>niels@frankframework.org</email>
+			<organization>Frank!Framework</organization>
+			<organizationUrl>https://frankframework.org</organizationUrl>
+		</developer>
+		<developer>
+			<name>Tim van der Leeuw</name>
+			<email>tim@frankframework.org</email>
+			<organization>Frank!Framework</organization>
+			<organizationUrl>https://frankframework.org</organizationUrl>
+		</developer>
+		<developer>
+			<name>Ali Sihab Akcan</name>
+			<email>ali@ibissource.org</email>
+			<organization>Frank!Framework</organization>
+			<organizationUrl>https://frankframework.org</organizationUrl>
+		</developer>
+		<developer>
 			<name>Jaco de Groot</name>
 			<email>jaco@ibissource.org</email>
-			<organization>Ibissource</organization>
-			<organizationUrl>https://ibissource.org</organizationUrl>
-		</developer>
-		<developer>
-			<name>Niels Meijer</name>
-			<email>niels@ibissource.org</email>
-			<organization>Ibissource</organization>
-			<organizationUrl>https://ibissource.org</organizationUrl>
-		</developer>
-		<developer>
-			<name>Peter Leeuwenburgh</name>
-			<email>peter@ibissource.org</email>
-			<organization>Ibissource</organization>
-			<organizationUrl>https://ibissource.org</organizationUrl>
+			<organization>Frank!Framework</organization>
+			<organizationUrl>https://frankframework.org</organizationUrl>
 		</developer>
 		<developer>
 			<name>Gerrit van Brakel</name>
 			<email>gerrit@ibissource.org</email>
-			<organization>Ibissource</organization>
-			<organizationUrl>https://ibissource.org</organizationUrl>
+			<organization>Frank!Framework</organization>
+			<organizationUrl>https://frankframework.org</organizationUrl>
 		</developer>
 	</developers>
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- Lock transient dependency versions to fix CVE's -->
 			<dependency>
-				<groupId>org.ibissource</groupId>
-				<artifactId>ibis-adapterframework-core</artifactId>
-				<version>7.6-SNAPSHOT</version>
+				<groupId>commons-beanutils</groupId>
+				<artifactId>commons-beanutils</artifactId>
+				<version>1.9.4</version>
 			</dependency>
-			<!-- 
 			<dependency>
-				<groupId>org.ibissource</groupId>
-				<artifactId>ibis-adapterframework-core</artifactId>
-				<classifier>services</classifier>
-				<version>7.6-SNAPSHOT</version>
+				<groupId>commons-fileupload</groupId>
+				<artifactId>commons-fileupload</artifactId>
+				<version>1.5</version>
+			</dependency>
+			<dependency>
+				<groupId>net.minidev</groupId>
+				<artifactId>json-smart</artifactId>
+				<version>2.5.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jdom</groupId>
+				<artifactId>jdom2</artifactId>
+				<version>2.0.6.1</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.protobuf</groupId>
+				<artifactId>protobuf-java</artifactId>
+				<version>4.28.0</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>33.3.0-jre</version>
+			</dependency>
+			<dependency><!-- needed for io.fabric8:kubernetes-client transitive deps -->
+				<groupId>com.squareup.okhttp3</groupId>
+				<artifactId>okhttp</artifactId>
+				<version>4.12.0</version>
+			</dependency>
+			<dependency>
+				<groupId>com.nimbusds</groupId>
+				<artifactId>nimbus-jose-jwt</artifactId>
+				<version>9.40</version>
+			</dependency>
+			<!-- End Lock transient deps -->
+
+			<dependency>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-commons</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-security</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-management-gateway</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.frankframework</groupId>
+				<artifactId>credentialprovider</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-tibco</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-sap</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-messaging</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-larva</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-akamai</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-cmis</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-console</artifactId>
+				<version>${project.version}</version>
+				<type>pom</type>
+			</dependency>
+			<dependency>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-console-frontend</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-console-backend</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-console-webapp</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-webapp</artifactId>
+				<version>${project.version}</version>
 				<type>war</type>
 			</dependency>
-			 -->
 			<dependency>
-				<groupId>org.ibissource</groupId>
-				<artifactId>ibis-adapterframework-ifsa</artifactId>
-				<version>7.6-SNAPSHOT</version>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-ear</artifactId>
+				<version>${project.version}</version>
+				<type>ear</type>
 			</dependency>
 			<dependency>
-				<groupId>org.ibissource</groupId>
-				<artifactId>ibis-adapterframework-tibco</artifactId>
-				<version>7.6-SNAPSHOT</version>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-test</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.ibissource</groupId>
-				<artifactId>ibis-adapterframework-sap</artifactId>
-				<version>7.6-SNAPSHOT</version>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-test-integration</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.ibissource</groupId>
-				<artifactId>ibis-adapterframework-coolgen</artifactId>
-				<version>7.6-SNAPSHOT</version>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-idin</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.ibissource</groupId>
-				<artifactId>ibis-adapterframework-ibm</artifactId>
-				<version>7.6-SNAPSHOT</version>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-ladybug</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.ibissource</groupId>
-				<artifactId>ibis-adapterframework-larva</artifactId>
-				<version>7.6-SNAPSHOT</version>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-aspose</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.ibissource</groupId>
-				<artifactId>ibis-adapterframework-akamai</artifactId>
-				<version>7.6-SNAPSHOT</version>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-aws</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.ibissource</groupId>
-				<artifactId>ibis-adapterframework-cmis</artifactId>
-				<version>7.6-SNAPSHOT</version>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-dbms</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.ibissource</groupId>
-				<artifactId>ibis-adapterframework-webapp</artifactId>
-				<version>7.6-SNAPSHOT</version>
-				<type>war</type>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-nn-specials</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.ibissource</groupId>
-				<artifactId>ibis-adapterframework-ear</artifactId>
-				<version>7.6-SNAPSHOT</version>
-				<type>war</type>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-batch</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.ibissource</groupId>
-				<artifactId>ibis-adapterframework-test</artifactId>
-				<version>7.6-SNAPSHOT</version>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-filesystem</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.ibissource</groupId>
-				<artifactId>ibis-adapterframework-test-integration</artifactId>
-				<version>7.6-SNAPSHOT</version>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-kubernetes</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-bundle-minimal</artifactId>
+				<version>${project.version}</version>
+				<type>pom</type>
 			</dependency>
 			<dependency>
-				<groupId>org.ibissource</groupId>
-				<artifactId>ibis-adapterframework-idin</artifactId>
-				<version>7.6-SNAPSHOT</version>
+				<groupId>org.frankframework</groupId>
+				<artifactId>frankframework-bundle-full</artifactId>
+				<version>${project.version}</version>
+				<type>pom</type>
+			</dependency>
+
+			<!-- API's are to compile, implementations should be provided by the application server -->
+			<dependency>
+				<groupId>jakarta.activation</groupId>
+				<artifactId>jakarta.activation-api</artifactId>
+				<version>2.1.3</version>
 			</dependency>
 			<dependency>
-				<groupId>org.ibissource</groupId>
-				<artifactId>ibis-adapterframework-ladybug</artifactId>
-				<version>7.6-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>org.ibissource</groupId>
-				<artifactId>ibis-adapterframework-aspose</artifactId>
-				<version>7.6-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>commons-lang</groupId>
-				<artifactId>commons-lang</artifactId>
-				<version>2.6</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-core</artifactId>
-				<version>${log4j2.version}</version>
-			</dependency>
-			<!-- Servlet support for multiple contexts -->
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-web</artifactId>
-				<version>${log4j2.version}</version>
-			</dependency>
-			<!-- LOG4J SLF4J bridge -->
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-slf4j-impl</artifactId>
-				<version>${log4j2.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>javax.ejb</groupId>
-				<artifactId>ejb-api</artifactId>
-				<version>3.0</version>
-			</dependency>
-			<dependency>
-				<groupId>org.ibissource</groupId>
-				<artifactId>ibis-struts</artifactId>
-				<version>1.2.9.4</version>
-			</dependency>
-			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>javax.servlet-api</artifactId>
-				<version>3.0.1</version>
+				<groupId>jakarta.transaction</groupId>
+				<artifactId>jakarta.transaction-api</artifactId>
+				<version>2.0.1</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.geronimo.specs</groupId>
-				<artifactId>geronimo-jms_1.1_spec</artifactId>
-				<version>1.1</version>
+				<groupId>jakarta.servlet</groupId>
+				<artifactId>jakarta.servlet-api</artifactId>
+				<version>6.1.0</version>
 				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.jms</groupId>
+				<artifactId>jakarta.jms-api</artifactId>
+				<version>3.1.0</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.annotation</groupId>
+				<artifactId>jakarta.annotation-api</artifactId>
+				<version>3.0.0</version>
+			</dependency>
+
+			<!-- SPRING to force versions -->
+			<dependency><!-- required for CMIS and the IbisTester class -->
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-test</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+
+			<!-- import BOM to lock all versions -->
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-framework-bom</artifactId>
+				<version>${spring.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<!-- import BOM to lock all versions -->
+			<dependency>
+				<groupId>org.springframework.integration</groupId>
+				<artifactId>spring-integration-bom</artifactId>
+				<version>${spring-integration.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-bom</artifactId>
+				<version>4.1.112.Final</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<!-- explicitly define Spring dependencies, to avoid version conflicts with Spring Security (https://www.baeldung.com/spring-security-with-maven) -->
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-bom</artifactId>
+				<version>${spring-security.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<!-- import BOM to lock all versions -->
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-bom</artifactId>
+				<version>${log4j2.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<!-- SLF4J Log binding -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>2.0.16</version>
+			</dependency>
+
+			<dependency>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>bom</artifactId>
+				<version>${aws.java.sdk.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<!-- the bcpg depends on the other two modules, however to ensure we're using the latest version, explicitly define them here, dependabot will take care of the rest -->
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcprov-jdk18on</artifactId>
+				<version>${bouncycastle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcutil-jdk18on</artifactId>
+				<version>${bouncycastle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcpg-jdk18on</artifactId>
+				<version>${bouncycastle.version}</version>
+			</dependency>
+
+			<!-- Jackson dependencies -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+				<artifactId>jackson-jakarta-rs-json-provider</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.dataformat</groupId>
+				<artifactId>jackson-dataformat-cbor</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-annotations</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>jaxb-runtime</artifactId>
+				<version>4.0.5</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-digester3</artifactId>
 				<version>3.2</version>
+				<exclusions>
+					<exclusion><!-- Prevent double asm jar in webapp -->
+						<groupId>asm</groupId>
+						<artifactId>asm</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>commons-collections</groupId>
+						<artifactId>commons-collections</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>commons-digester</groupId>
-				<artifactId>commons-digester</artifactId>
-				<version>1.8.1</version>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-pool2</artifactId>
+				<version>2.12.0</version>
 			</dependency>
 			<dependency>
-				<groupId>commons-httpclient</groupId>
-				<artifactId>commons-httpclient</artifactId>
-				<version>3.1</version>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>3.17.0</version>
 			</dependency>
 			<dependency>
-				<groupId>commons-pool</groupId>
-				<artifactId>commons-pool</artifactId>
-				<version>1.5.5</version>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-text</artifactId>
+				<version>1.12.0</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-codec</groupId>
 				<artifactId>commons-codec</artifactId>
-				<version>1.13</version>
+				<version>1.17.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-collections4</artifactId>
+				<version>4.4</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-net</groupId>
 				<artifactId>commons-net</artifactId>
-				<version>1.4.1</version>
+				<version>3.11.1</version>
 			</dependency>
 			<dependency>
-				<groupId>com.sun.mail</groupId>
-				<artifactId>javax.mail</artifactId>
-				<version>1.6.2</version>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>2.16.1</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.mail</groupId>
+				<artifactId>jakarta.mail-api</artifactId>
+				<version>2.1.3</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.angus</groupId>
+				<artifactId>angus-mail</artifactId>
+				<version>2.0.3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok</artifactId>
-				<!-- If you update this version number, please update it in CONTRIBUTING.md  as well! -->
-				<version>1.18.12</version>
+				<version>1.18.34</version>
 				<scope>provided</scope>
+			</dependency>
+
+			<!-- Spring Boot context loaders -->
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter</artifactId>
+				<version>${spring.boot.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-starter-logging</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-autoconfigure</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.yaml</groupId>
+						<artifactId>snakeyaml</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-security</artifactId>
+				<version>${spring.boot.version}</version>
+			</dependency>
+
+			<!-- contains Tomcat for executable WAR archives -->
+			<dependency>
+				<groupId>org.apache.tomcat.embed</groupId>
+				<artifactId>tomcat-embed-core</artifactId>
+				<version>${tomcat.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tomcat.embed</groupId>
+				<artifactId>tomcat-embed-el</artifactId>
+				<version>${tomcat.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-tomcat</artifactId>
+				<version>${spring.boot.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<!-- contains the class and application 'loaders' for executable archives -->
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-loader</artifactId>
+				<version>${spring.boot.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<!-- aggregates all loggers to SLF4J -->
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-logging</artifactId>
+				<version>${spring.boot.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<!-- test scoped dependencies -->
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter</artifactId>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-engine</artifactId>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-params</artifactId>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<version>${mockito.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-junit-jupiter</artifactId>
+				<version>${mockito.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.hamcrest</groupId>
+				<artifactId>hamcrest</artifactId>
+				<version>2.2</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.awaitility</groupId>
+				<artifactId>awaitility</artifactId>
+				<version>4.2.2</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>net.oneandone.mockrunner</groupId>
+				<artifactId>mockrunner-jms</artifactId>
+				<version>3.0.1</version>
+				<scope>test</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>xerces</groupId>
+						<artifactId>xercesImpl</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>ant</groupId>
+						<artifactId>ant</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>testcontainers-bom</artifactId>
+				<version>1.20.1</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -240,108 +655,80 @@
 	<build>
 		<defaultGoal>install</defaultGoal>
 		<plugins>
+			<!-- Execute org.jasig.maven:notice-maven-plugin:generate in order to (re)generate a NOTICE file -->
 			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
+				<groupId>org.jasig.maven</groupId>
+				<artifactId>notice-maven-plugin</artifactId>
+				<version>2.0.0</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<excludedModules>
+						<excludedModule>frankframework-sap</excludedModule>
+						<excludedModule>frankframework-tibco</excludedModule>
+						<excludedModule>frankframework-idin</excludedModule>
+					</excludedModules>
+					<noticeMessage>{0} - using: {1}</noticeMessage>
+					<excludeOptional>true</excludeOptional>
+					<generateChildNotices>false</generateChildNotices>
+					<includeChildDependencies>true</includeChildDependencies>
+					<licenseMapping>
+						<param>license-mappings.xml</param>
+					</licenseMapping>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.2.0</version>
-				<configuration>
-					<archive>
-						<addMavenDescriptor>true</addMavenDescriptor>
-						<manifest>
-							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-						</manifest>
-					</archive>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>3.3.0</version>
-				<configuration>
-					<packagingExcludes>.gitignore</packagingExcludes>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>3.2.1</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.github.hazendaz.maven</groupId>
+				<artifactId>directory-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.glassfish.copyright</groupId>
+				<artifactId>glassfish-copyright-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.2.0</version>
-				<configuration>
-					<doclint>none</doclint>
-					<tags>
-						<tag>
-							<name>IbisDoc.required</name>
-							<!-- The value X makes javadoc ignoring the tag. See: https://maven.apache.org/plugins/maven-javadoc-plugin/javadoc-mojo.html#tags -->
-							<placement>X</placement>
-						</tag>
-						<tag>
-							<name>IbisDoc.default</name>
-							<placement>X</placement>
-						</tag>
-						<tag>
-							<name>IbisDoc.optional</name>
-							<placement>X</placement>
-						</tag>
-					</tags>
-				</configuration>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<failOnError>false</failOnError>
-						</configuration>
-					</execution>
-				</executions>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
 			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.22.2</version>
+				<version>3.5.0</version>
 				<configuration>
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
-					<!-- requires version 2.22.1 -->
-					<includes>
-						<include>**/*.java</include>
-					</includes>
-					<excludes>
-						<exclude>it.**</exclude>
-					</excludes>
+					<excludedGroups>${junit.excludedTags}</excludedGroups>
+					<groups>${junit.includedTags}</groups>
+					<reuseForks>true</reuseForks>
+					<argLine>@{argLine} -Dfile.encoding=CP-1252 --add-opens java.base/java.io=ALL-UNNAMED -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI</argLine>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.7</version>
+				<version>3.1.3</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
-				<version>2.5.3</version>
+				<version>3.1.1</version>
 				<configuration>
+					<goals>deploy</goals>
 					<tagNameFormat>v@{project.version}</tagNameFormat>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 				</configuration>
@@ -349,9 +736,452 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-				<version>3.9.1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.13.0</version>
+					<configuration>
+						<release>${maven.compiler.target}</release>
+						<source>${maven.compiler.source}</source>
+						<target>${maven.compiler.target}</target>
+						<compilerArgs>
+							<arg>-parameters</arg>
+						</compilerArgs>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>3.4.2</version>
+					<configuration>
+						<archive>
+							<addMavenDescriptor>true</addMavenDescriptor>
+							<manifest>
+								<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							</manifest>
+						</archive>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>3.4.0</version>
+					<configuration>
+						<packagingExcludes>.gitignore</packagingExcludes>
+						<archive>
+							<manifest>
+								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							</manifest>
+							<manifestEntries>
+								<DisableIBMJAXWSEngine>true</DisableIBMJAXWSEngine>
+								<Enable-CDI>false</Enable-CDI>
+							</manifestEntries>
+						</archive>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>3.3.1</version>
+					<executions>
+						<execution>
+							<id>attach-sources</id>
+							<phase>prepare-package</phase>
+							<goals>
+								<goal>jar-no-fork</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.projectlombok</groupId>
+					<artifactId>lombok-maven-plugin</artifactId>
+					<version>1.18.20.0</version>
+					<dependencies><!-- This specified version of Lombok can be removed when the lombok-maven-plugin is updated >= 1.18.30 -->
+						<dependency>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>1.18.34</version>
+						</dependency>
+					</dependencies>
+					<executions>
+						<execution>
+							<phase>generate-sources</phase>
+							<goals>
+								<goal>delombok</goal>
+							</goals>
+							<configuration>
+								<sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
+								<addOutputDirectory>false</addOutputDirectory>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.glassfish.copyright</groupId>
+					<artifactId>glassfish-copyright-maven-plugin</artifactId>
+					<version>2.4</version>
+					<executions>
+						<execution>
+							<id>Check-CopyRight-Notice</id>
+							<goals>
+								<goal>copyright</goal><!-- Checks for Copyright notices -->
+								<goal>check</goal><!-- Fails the build -->
+							</goals>
+							<phase>process-sources</phase>
+						</execution>
+					</executions>
+					<configuration>
+						<excludeFile>${iaf.rootdir}/copyrightExcludeFile.txt</excludeFile>
+						<exclude>
+							DataSourceXAResourceRecoveryHelper.java,NarayanaRecoveryManager.java,PasswordHash.java,FrankJ2V8LibraryLoader.java,ReplacingVariablesInputStream.java,ReplacingInputStream.java
+						</exclude>
+						<ignoreYear>true</ignoreYear>
+						<useDash>true</useDash>
+						<templateFile>${iaf.rootdir}/copyrightTemplateFile.txt</templateFile>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>com.github.hazendaz.maven</groupId>
+					<artifactId>directory-maven-plugin</artifactId>
+					<version>1.2.0</version>
+					<executions>
+						<execution>
+							<id>find-project-root-directory</id>
+							<goals>
+								<goal>directory-of</goal>
+							</goals>
+							<phase>initialize</phase>
+							<configuration>
+								<property>iaf.rootdir</property>
+								<project>
+									<groupId>org.frankframework</groupId>
+									<artifactId>frankframework-parent</artifactId>
+								</project>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<version>0.8.12</version>
+					<executions>
+						<execution>
+							<id>prepare-jacoco</id>
+							<phase>initialize</phase>
+							<goals>
+								<goal>prepare-agent</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>generate-jacoco-report</id>
+							<phase>test</phase>
+							<goals>
+								<goal>report</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>${javadoc-plugin.version}</version>
+					<configuration>
+						<source>${maven.compiler.source}</source>
+						<doclint>none</doclint>
+						<quiet>true</quiet>
+						<tags>
+							<tag>
+								<name>ff.parameters</name>
+								<placement>a</placement>
+								<head>Parameters</head>
+							</tag>
+							<!-- The ff.parameter tag can occur multiple times in the same JavaDoc comment.
+								 The standard doclet does not properly format JavaDoc tags in this case. This
+								 can be solved with a taglet, but we do not want that complexity.
+								 We therefore accept that all occurrences of ff.parameter are formatted on the
+								 same line.
+
+								 The ff.parameter tag was introduced for the Frank!Doc. The Frank!Doc formats
+								 it properly.
+							-->
+							<tag>
+								<name>ff.parameter</name>
+								<placement>a</placement>
+								<head>Specific parameters</head>
+							</tag>
+							<tag>
+								<name>ff.default</name>
+								<placement>a</placement>
+								<head>Default value</head>
+							</tag>
+							<tag>
+								<name>ff.defaultElement</name>
+								<placement>a</placement>
+								<head>Default element</head>
+							</tag>
+							<tag>
+								<name>ff.forward</name>
+								<placement>X</placement>
+							</tag>
+							<tag>
+								<name>ff.noAttribute</name>
+								<placement>X</placement>
+							</tag>
+						</tags>
+						<useStandardDocletOptions>true</useStandardDocletOptions>
+						<skippedModules>frankframework-test,frankframework-example,frankframework-webapp,frankframework-console-frontend</skippedModules>
+					</configuration>
+					<executions>
+						<execution>
+							<id>attach-javadoc</id>
+							<phase>generate-sources</phase>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+							<configuration>
+								<failOnError>false</failOnError>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.20.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-checkstyle-plugin</artifactId>
+					<version>3.5.0</version>
+					<configuration>
+						<configLocation>${iaf.rootdir}/checkstyle.xml</configLocation>
+						<propertyExpansion>config_loc=${iaf.rootdir}</propertyExpansion>
+						<logViolationsToConsole>true</logViolationsToConsole>
+					</configuration>
+					<executions>
+						<execution>
+							<id>verify-code-style</id>
+							<phase>process-classes</phase>
+							<goals>
+								<goal>check</goal>
+							</goals>
+						</execution>
+					</executions>
+					<dependencies>
+						<dependency>
+							<groupId>com.puppycrawl.tools</groupId>
+							<artifactId>checkstyle</artifactId>
+							<version>10.18.1</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>flatten-maven-plugin</artifactId>
+					<version>1.6.0</version>
+					<configuration>
+						<updatePomFile>true</updatePomFile>
+						<flattenMode>resolveCiFriendliesOnly</flattenMode>
+					</configuration>
+					<executions>
+						<execution>
+							<id>flatten</id>
+							<phase>initialize</phase>
+							<goals>
+								<goal>flatten</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>clean</id>
+							<phase>clean</phase>
+							<goals>
+								<goal>clean</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
+				<!-- This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.glassfish.copyright</groupId>
+										<artifactId>glassfish-copyright-maven-plugin</artifactId>
+										<versionRange>[2.4,)</versionRange>
+										<goals>
+											<goal>check</goal>
+											<goal>copyright</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore/>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>com.github.hazendaz.maven</groupId>
+										<artifactId>directory-maven-plugin</artifactId>
+										<versionRange>[1,)</versionRange>
+										<goals>
+											<goal>directory-of</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore/>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-checkstyle-plugin</artifactId>
+										<versionRange>[3.1.2,)</versionRange>
+										<goals>
+											<goal>check</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore/>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-enforcer-plugin</artifactId>
+										<versionRange>[3.2.1,)</versionRange>
+										<goals>
+											<goal>enforce</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore/>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<version>3.5.0</version>
+					<executions>
+						<execution>
+							<id>enforce-lib-ban</id>
+							<goals>
+								<goal>enforce</goal>
+							</goals>
+							<configuration>
+								<rules>
+									<bannedDependencies>
+										<excludes>
+											<exclude>com.sun.mail:javax.mail</exclude><!-- Java Mail was renamed to the Jakarta Mail -->
+											<exclude>org.eclipse.angus:angus-mail:[1.0.0]</exclude><!-- don't use com.sun.mail packages anymore -->
+											<exclude>javax.transaction:javax.transaction-api</exclude><!-- javax.transaction-api was renamed to the jakarta.transaction-api -->
+											<exclude>org.glassfish:javax.json</exclude>
+											<exclude>com.google.code.findbugs:jsr305</exclude>
+										</excludes>
+										<message>use jakarta packages instead</message>
+									</bannedDependencies>
+									<bannedDependencies>
+										<!-- Java Annotations was renamed to the Jakarta Annotations -->
+										<excludes>
+											<exclude>javax.annotation:javax.annotation-api</exclude>
+											<exclude>javax.xml.ws:jaxws-api</exclude>
+											<exclude>javax.xml.bind:jaxb-api</exclude>
+											<exclude>javax.xml.soap:javax.xml.soap-api</exclude>
+										</excludes>
+										<message>Prevent the use of both javax and jakarta packages</message>
+									</bannedDependencies>
+									<bannedDependencies>
+										<!-- the jms api now finally officially exists, no need to use geronimo anymore -->
+										<!-- also excludes version 2 which uses the old javax namespaces -->
+										<excludes>
+											<exclude>jakarta.jms:jakarta.jms-api:[2.0.2],[2.0.3]</exclude>
+											<exclude>org.apache.geronimo.specs:geronimo-jms_1.1_spec</exclude>
+											<exclude>org.apache.geronimo.specs:geronimo-jms_2.0_spec</exclude>
+										</excludes>
+										<message>Don't use geronimo anymore, ensure javax namespace is used</message>
+									</bannedDependencies>
+									<bannedDependencies>
+										<excludes>
+											<exclude>javax.xml.stream:stax-api</exclude>
+											<exclude>xml-apis:xml-apis</exclude>
+										</excludes>
+										<message>Prevent the use of STAX1, use STAX 2 (org.codehaus.woodstox:stax2-api) instead!</message>
+									</bannedDependencies>
+									<bannedDependencies>
+										<!-- the activation framework was renamed to the jakarta activation framework -->
+										<excludes>
+											<exclude>javax.activation:javax.activation-api</exclude>
+											<exclude>com.sun.activation:javax.activation</exclude>
+											<exclude>com.sun.activation:jakarta.activation</exclude>
+											<exclude>javax.activation:activation</exclude>
+										</excludes>
+										<message>Don't touch versions, we should use jakarta.activation-api:2.1.3</message>
+									</bannedDependencies>
+									<bannedDependencies>
+										<excludes>
+											<exclude>org.bouncycastle:*-jdk12</exclude>
+											<exclude>org.bouncycastle:*-jdk14</exclude>
+											<exclude>org.bouncycastle:*-jdk15</exclude>
+											<exclude>org.bouncycastle:*-jdk16</exclude>
+											<exclude>org.bouncycastle:*-jdk15to18</exclude>
+											<exclude>org.bouncycastle:*-ext-jdk15on</exclude>
+											<exclude>org.bouncycastle:*-jdk15on</exclude>
+											<exclude>bouncycastle:*</exclude>
+										</excludes>
+										<message>use the newer 'org.bouncycastle:*-jdk18on' version of org.bouncycastle</message>
+									</bannedDependencies>
+								</rules>
+							</configuration>
+						</execution>
+						<execution>
+							<id>enforce-classpath-lib-ban</id>
+							<goals>
+								<goal>enforce</goal>
+							</goals>
+							<configuration>
+								<rules>
+									<bannedDependencies>
+										<excludes>
+											<exclude>ant:ant</exclude>
+											<!-- Once testcontainers finally starts using junit5 remove this comment.. <exclude>junit:junit</exclude>-->
+											<exclude>jakarta.jms:jakarta.jms-api:*:jar:compile</exclude>
+											<exclude>org.apache.geronimo.specs:geronimo-jms_1.1_spec:*:jar:compile</exclude>
+											<exclude>org.apache.geronimo.specs:geronimo-jms_2.0_spec:*:jar:compile</exclude>
+											<exclude>org.apache.geronimo.javamail:geronimo-javamail_1.4_mail:*:jar:compile</exclude>
+											<exclude>org.apache.geronimo.specs:geronimo-jta_1.1_spec:*:jar:compile</exclude>
+											<exclude>javax.servlet:javax.servlet-api:*:jar:compile</exclude>
+											<exclude>jakarta.servlet:jakarta.servlet-api:*:jar:compile</exclude>
+											<exclude>jakarta.transaction:jakarta.transaction-api:*:jar:compile</exclude>
+										</excludes>
+										<message>These dependencies should be provided by the Application Server!</message>
+									</bannedDependencies>
+								</rules>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 	<reporting>
@@ -359,29 +1189,63 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>3.1.0</version>
+				<version>3.7.0</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>modules</report>
+						</reports>
+					</reportSet>
+				</reportSets>
 			</plugin>
-			<!-- 
-				http://maven.apache.org/plugins/maven-javadoc-plugin/usage.html 
-				Generate Javadocs As Part Of Project Reports 
+			<!--
+				http://maven.apache.org/plugins/maven-javadoc-plugin/usage.html
+				Generate Javadocs As Part Of Project Reports
 			-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.2.0</version>
-				<configuration>
-					<doclint>none</doclint>
-				</configuration>
+				<version>${javadoc-plugin.version}</version>
+				<reportSets>
+					<reportSet>
+						<id>default</id>
+						<reports>
+							<report>javadoc</report>
+						</reports>
+					</reportSet>
+					<reportSet>
+						<id>javadoc</id>
+						<inherited>false</inherited>
+						<reports>
+							<report>aggregate</report>
+						</reports>
+					</reportSet>
+				</reportSets>
 			</plugin>
 		</plugins>
 	</reporting>
 
 	<scm>
-		<url>https://github.com/ibissource/iaf</url>
-		<connection>scm:git:https://github.com/ibissource/iaf.git</connection>
-		<developerConnection>scm:git:https://github.com/ibissource/iaf.git</developerConnection>
+		<url>https://github.com/frankframework/frankframework</url>
+		<connection>scm:git:https://github.com/frankframework/frankframework.git</connection>
+		<developerConnection>scm:git:https://github.com/frankframework/frankframework.git</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
+
+	<repositories>
+		<repository>
+			<id>central</id>
+			<name>Central Repository</name>
+			<url>https://repo.maven.apache.org/maven2/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>frankframework</id>
+			<url>https://nexus.frankframework.org/content/groups/public</url>
+		</repository>
+	</repositories>
 
 	<profiles>
 		<profile>
@@ -392,6 +1256,16 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
 						<version>1.6</version>
+						<configuration>
+							<passphrase>${gpg.passphrase}</passphrase>
+							<gpgArguments>
+								<!-- This is necessary for gpg to not try to use the pinentry programs -->
+								<arg>--batch</arg>
+								<arg>--no-tty</arg>
+								<arg>--pinentry-mode</arg>
+								<arg>loopback</arg>
+							</gpgArguments>
+						</configuration>
 						<executions>
 							<execution>
 								<id>sign-artifacts</id>
@@ -405,12 +1279,12 @@
 					<plugin>
 						<groupId>org.sonatype.plugins</groupId>
 						<artifactId>nexus-staging-maven-plugin</artifactId>
-						<version>1.6.8</version>
+						<version>1.7.0</version>
 						<extensions>true</extensions>
 						<configuration>
 							<serverId>ossrh</serverId>
-							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-							<autoReleaseAfterClose>true</autoReleaseAfterClose>
+							<nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+							<autoReleaseAfterClose>false</autoReleaseAfterClose>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -418,11 +1292,11 @@
 			<distributionManagement>
 				<repository>
 					<id>ossrh</id>
-					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+					<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 				</repository>
 				<snapshotRepository>
 					<id>ossrh</id>
-					<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+					<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
 				</snapshotRepository>
 				<site>
 					<id>www.ibissource.org</id>
@@ -434,24 +1308,18 @@
 			<id>ibissource</id>
 			<distributionManagement>
 				<repository>
-					<id>ibissource</id>
-					<url>https://nexus.ibissource.org/content/repositories/releases</url>
+					<id>frankframework</id>
+					<url>https://nexus.frankframework.org/content/repositories/releases</url>
 				</repository>
 				<snapshotRepository>
-					<id>ibissource</id>
-					<url>https://nexus.ibissource.org/content/repositories/snapshots</url>
+					<id>frankframework</id>
+					<url>https://nexus.frankframework.org/content/repositories/snapshots</url>
 				</snapshotRepository>
 				<site>
 					<id>www.ibissource.org</id>
 					<url>file:target/site-deploy</url>
 				</site>
 			</distributionManagement>
-			<repositories>
-				<repository>
-					<id>ibissource</id>
-					<url>https://nexus.ibissource.org/content/groups/public</url>
-				</repository>
-			</repositories>
 		</profile>
 		<profile>
 			<id>default-modules</id><!-- Profile defaults to ON, when the property is set it will turn off -->
@@ -461,13 +1329,30 @@
 				</property>
 			</activation>
 			<modules>
+				<module>commons</module>
+				<module>security</module>
+				<module>credentialProvider</module>
+				<module>management-gateway</module>
 				<module>core</module>
-				<module>webapp</module>
-				<module>ear</module>
+				<module>filesystem</module>
+				<module>console</module>
 				<module>larva</module>
 				<module>ladybug</module>
-				<module>test</module>
+				<module>dbms</module>
+				<module>bundle-minimal</module>
+
 				<module>akamai</module>
+				<module>aws</module>
+				<module>batch</module>
+				<module>cmis</module>
+				<module>aspose</module>
+				<module>nn-specials</module>
+				<module>messaging</module>
+				<module>kubernetes</module>
+				<module>bundle-full</module>
+
+				<module>webapp</module>
+				<module>test</module>
 				<module>example</module>
 			</modules>
 		</profile>
@@ -483,17 +1368,6 @@
 			</modules>
 		</profile>
 		<profile>
-			<id>cmis</id>
-			<activation>
-				<property>
-					<name>cmis</name>
-				</property>
-			</activation>
-			<modules>
-				<module>cmis</module>
-			</modules>
-		</profile>
-		<profile>
 			<id>proprietary</id>
 			<activation>
 				<property>
@@ -501,18 +1375,25 @@
 				</property>
 			</activation>
 			<modules>
-				<module>coolgen</module>
-				<module>ibm</module>
-				<module>ifsa</module>
 				<module>sap</module>
 				<module>tibco</module>
 				<module>idin</module>
-				<module>aspose</module>
 			</modules>
 			<repositories>
 				<repository>
+					<id>central</id>
+					<name>Central Repository</name>
+					<url>https://repo.maven.apache.org/maven2/</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+				<repository>
 					<id>proprietary</id>
-					<url>https://nexus.ibissource.org/content/repositories/private/</url>
+					<url>https://nexus.frankframework.org/content/repositories/private/</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
 				</repository>
 			</repositories>
 		</profile>
@@ -528,27 +1409,111 @@
 			</modules>
 		</profile>
 		<profile>
+			<id>javadoc</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.projectlombok</groupId>
+						<artifactId>lombok-maven-plugin</artifactId>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<configuration>
+							<sourcepath>${project.build.directory}/generated-sources/delombok</sourcepath>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>attachFrankDoc</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<pluginRepositories>
+				<pluginRepository>
+					<id>frankframework</id>
+					<url>https://nexus.frankframework.org/content/groups/public</url>
+					<snapshots>
+						<enabled>true</enabled>
+						<updatePolicy>always</updatePolicy>
+					</snapshots>
+				</pluginRepository>
+			</pluginRepositories>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.projectlombok</groupId>
+						<artifactId>lombok-maven-plugin</artifactId>
+					</plugin>
+					<plugin>
+						<groupId>org.frankframework</groupId>
+						<artifactId>frank-doc-plugin</artifactId>
+						<version>1.0</version>
+						<inherited>false</inherited> <!-- Only run the Frank!Doc once and include all modules -->
+						<configuration>
+							<doclint>none</doclint>
+							<quiet>true</quiet>
+							<doclet>org.frankframework.frankdoc.doclet.DocletBuilder</doclet>
+							<docletArtifact>
+								<groupId>org.frankframework</groupId>
+								<artifactId>frank-doc-doclet</artifactId>
+								<version>${frankdoc.version}</version>
+							</docletArtifact>
+							<frontendArtifact>
+								<groupId>org.frankframework</groupId>
+								<artifactId>frank-doc-frontend</artifactId>
+								<version>${frankdoc.version}</version>
+							</frontendArtifact>
+							<additionalJOptions>
+								<additionalJOption>-J--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</additionalJOption>
+								<additionalJOption>-J--add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</additionalJOption>
+							</additionalJOptions>
+							<additionalOptions>
+								<additionalOption>-outputDirectory</additionalOption>
+								<additionalOption>${project.build.directory}/frankdoc</additionalOption>
+								<additionalOption>-digesterRulesPath</additionalOption>
+								<additionalOption>${project.basedir}/core/src/main/resources/digester-rules.xml</additionalOption>
+								<additionalOption>-rootClass</additionalOption>
+								<additionalOption>org.frankframework.configuration.Configuration</additionalOption>
+								<additionalOption>-frankFrameworkVersion</additionalOption>
+								<additionalOption>${project.version}</additionalOption>
+							</additionalOptions>
+							<show>private</show>
+							<outputDirectory>${project.build.directory}/frankdoc</outputDirectory>
+							<source>${maven.compiler.source}</source>
+							<useStandardDocletOptions>false</useStandardDocletOptions>
+							<appendTo>frankframework-core</appendTo>
+							<finalName>frankframework-parent-${project.version}</finalName>
+							<skippedModules>frankframework-test,frankframework-example,frankframework-webapp,frankframework-console-backend,frankframework-console-frontend</skippedModules>
+						</configuration>
+						<executions>
+							<execution>
+								<id>attach-frankdoc</id>
+								<phase>process-sources</phase>
+								<goals>
+									<goal>aggregate-jar</goal>
+								</goals>
+								<configuration>
+									<failOnError>true</failOnError>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
 			<id>codecoverage</id>
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>org.jacoco</groupId>
 						<artifactId>jacoco-maven-plugin</artifactId>
-						<version>0.8.5</version>
-						<executions>
-							<execution>
-								<goals>
-									<goal>prepare-agent</goal>
-								</goals>
-							</execution>
-							<execution>
-								<id>report</id>
-								<phase>test</phase>
-								<goals>
-									<goal>report</goal>
-								</goals>
-							</execution>
-						</executions>
 					</plugin>
 				</plugins>
 			</build>
@@ -557,7 +1522,6 @@
 					<plugin>
 						<groupId>org.jacoco</groupId>
 						<artifactId>jacoco-maven-plugin</artifactId>
-						<version>0.8.5</version>
 						<reportSets>
 							<reportSet>
 								<reports>
@@ -568,6 +1532,17 @@
 					</plugin>
 				</plugins>
 			</reporting>
+		</profile>
+		<profile><!-- https://stackoverflow.com/a/12598554/17193564 -->
+			<id>alternateBuildDir</id>
+			<activation>
+				<property>
+					<name>build.dir</name>
+				</property>
+			</activation>
+			<build>
+				<directory>${build.dir}</directory>
+			</build>
 		</profile>
 	</profiles>
 </project>

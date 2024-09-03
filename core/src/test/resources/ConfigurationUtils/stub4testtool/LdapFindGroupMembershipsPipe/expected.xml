@@ -1,0 +1,27 @@
+<configuration>
+	  <adapter name="LdapFindGroupMembershipsPipe">
+      <receiver name="testtool-LdapFindGroupMembershipsPipe">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-LdapFindGroupMembershipsPipe"/>
+      </receiver>
+		    <receiver>
+			      <listener className="org.frankframework.receivers.JavaListener"
+                   name="LdapFindGroupMembershipsPipe"/>
+		    </receiver>
+      <receiver name="testtool-LdapFindGroupMembershipsPipe-1">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-LdapFindGroupMembershipsPipe-1"/>
+      </receiver>
+		    <pipeline firstPipe="LdapFindGroupMembershipsPipe">
+			      <exits>
+				        <exit path="EXIT" state="success"/>
+			      </exits>
+			      <pipe name="LdapFindGroupMembershipsPipe"
+               className="org.frankframework.pipes.SenderPipe">
+            <sender className="org.frankframework.senders.IbisJavaSender"
+                    serviceName="testtool-LdapFindGroupMembershipsPipe"/>
+				        <forward name="success" path="EXIT"/>
+			      </pipe>
+		    </pipeline>
+	  </adapter>
+</configuration>

@@ -1,0 +1,26 @@
+<configuration>
+	  <adapter name="GetPrincipalPipe">
+      <receiver name="testtool-GetPrincipalPipe">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-GetPrincipalPipe"/>
+      </receiver>
+		    <receiver>
+			      <listener className="org.frankframework.receivers.JavaListener"
+                   name="GetPrincipalPipe"/>
+		    </receiver>
+      <receiver name="testtool-GetPrincipalPipe-1">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-GetPrincipalPipe-1"/>
+      </receiver>
+		    <pipeline firstPipe="GetPrincipalPipe">
+			      <exits>
+				        <exit path="EXIT" state="success"/>
+			      </exits>
+			      <pipe name="GetPrincipalPipe"
+               className="org.frankframework.pipes.EchoPipe"
+               getInputFromFixedValue="tst9">
+				        <forward name="success" path="EXIT"/>
+			      </pipe>
+		    </pipeline>
+	  </adapter>
+</configuration>

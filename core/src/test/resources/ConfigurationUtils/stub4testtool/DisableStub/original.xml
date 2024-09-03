@@ -1,0 +1,95 @@
+<configuration xmlns:stub="http://frankframework.org/stub">
+	<adapter name="DisableStubTrue" stub:disableStub="true">
+		<receiver name="DisableStubTrue"
+			transactionAttribute="Required">
+			<listener name="DisableStubTrue"
+				className="org.frankframework.jms.JmsListener"
+				lookupDestination="false"/>
+			<messageLog className="org.frankframework.jdbc.JdbcTransactionalStorage"
+				jmsRealm="jdbc"
+				slotId="DisableStubTrue"
+				retention="7"/>
+		</receiver>
+		<pipeline>
+			<exits>
+				<exit path="EXIT" state="success"/>
+			</exits>
+
+			<pipe name="CreateResponse"
+				className="org.frankframework.pipes.EchoPipe"
+				getInputFromFixedValue="Success ">
+				<forward name="success" path="EXIT"/>
+			</pipe>
+		</pipeline>
+	</adapter>
+
+	<adapter name="DisableStub!false" stub:disableStub="!FALSE">
+		<receiver name="DisableStub!false"
+			transactionAttribute="Required">
+			<listener name="FullAdapter"
+				className="org.frankframework.jms.JmsListener"
+				lookupDestination="false"/>
+		</receiver>
+		<pipeline>
+			<exits>
+				<exit path="EXIT" state="success"/>
+			</exits>
+
+			<pipe name="CreateResponse"
+				className="org.frankframework.pipes.EchoPipe"
+				getInputFromFixedValue="Success ">
+				<forward name="success" path="EXIT"/>
+			</pipe>
+		</pipeline>
+	</adapter>
+
+	<adapter name="DisableStubListenerTrue" stub:disableStub="false">
+		<receiver name="DisableStubTrue"
+			transactionAttribute="Required">
+			<listener name="DisableStubTrue"
+				className="org.frankframework.jms.JmsListener"
+				lookupDestination="false"
+				stub:disableStub="true"/>
+			<messageLog className="org.frankframework.jdbc.JdbcTransactionalStorage"
+				jmsRealm="jdbc"
+				slotId="DisableStubTrue"
+				retention="7"/>
+		</receiver>
+		<pipeline>
+			<exits>
+				<exit path="EXIT" state="success"/>
+			</exits>
+
+			<pipe name="CreateResponse"
+				className="org.frankframework.pipes.EchoPipe"
+				getInputFromFixedValue="Success ">
+				<forward name="success" path="EXIT"/>
+			</pipe>
+		</pipeline>
+	</adapter>
+
+	<adapter name="DisableStubListenerNotTrue">
+		<receiver name="DisableStubNotTrue"
+			transactionAttribute="Required">
+			<listener name="DisableStubNotTrue"
+				className="org.frankframework.jms.JmsListener"
+				lookupDestination="false"
+				stub:disableStub="false"/>
+			<messageLog className="org.frankframework.jdbc.JdbcTransactionalStorage"
+				jmsRealm="jdbc"
+				slotId="DisableStubTrue"
+				retention="7"/>
+		</receiver>
+		<pipeline>
+			<exits>
+				<exit path="EXIT" state="success"/>
+			</exits>
+
+			<pipe name="CreateResponse"
+				className="org.frankframework.pipes.EchoPipe"
+				getInputFromFixedValue="Success ">
+				<forward name="success" path="EXIT"/>
+			</pipe>
+		</pipeline>
+	</adapter>
+</configuration>

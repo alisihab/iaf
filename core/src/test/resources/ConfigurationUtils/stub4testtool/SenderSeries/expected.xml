@@ -1,0 +1,32 @@
+<configuration>
+	  <adapter name="SenderSeries">
+      <receiver name="testtool-SenderSeries">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-SenderSeries"/>
+      </receiver>
+		    <receiver name="SenderSeries">
+			      <listener className="org.frankframework.receivers.JavaListener"
+                   name="SenderSeries"/>
+		    </receiver>
+      <receiver name="testtool-SenderSeries-1">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-SenderSeries-1"/>
+      </receiver>
+
+		    <pipeline>
+			      <exits>
+				        <exit path="READY" state="success"/>
+			      </exits>
+			      <pipe name="Call Sender"
+               className="org.frankframework.pipes.SenderPipe"
+               timeoutOnResult="[timeout]"
+               exceptionOnResult="[error]">
+				        <sender className="org.frankframework.senders.SenderSeries">
+					          <sender className="org.frankframework.senders.EchoSender"/>
+					          <sender className="org.frankframework.senders.EchoSender"/>
+				        </sender>
+				        <forward name="success" path="READY"/>
+			      </pipe>
+		    </pipeline>
+	  </adapter>
+</configuration>

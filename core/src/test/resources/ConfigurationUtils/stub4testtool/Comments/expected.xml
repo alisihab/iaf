@@ -1,0 +1,22 @@
+<configuration>
+	<!-- This comments is not removed -->
+	<adapter name="Comments">
+      <receiver name="testtool-Comments">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-Comments"/>
+      </receiver>
+		    <!-- This comments is not removed -->
+		<!--<receiver name="Comments">
+
+			      <listener name="Comments" className="org.frankframework.jms.JmsListener">
+
+				        <sender name="Comments-ReplySender"
+                    className="org.frankframework.jms.JmsSender"
+                    lookupDestination="false"/>
+			      </listener>
+		    </receiver>--><receiver name="testtool-Comments-1">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-Comments-1"/>
+      </receiver>
+	  </adapter>
+</configuration>

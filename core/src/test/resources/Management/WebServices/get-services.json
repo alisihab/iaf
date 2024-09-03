@@ -1,0 +1,30 @@
+{
+    "services": [
+        {
+            "name": "TestRestListener",
+            "methods": [
+                "GET"
+            ],
+            "uriPattern": "rest-uri-pattern",
+            "receiver": "ReceiverName1",
+            "adapter": "TestAdapter"
+        }
+    ],
+    "wsdls": [
+        {
+            "name": "wsl-adapter",
+            "configuration": "TestConfiguration",
+            "adapter": "wsl-adapter"
+        }
+    ],
+    "apiListeners": [
+        {
+            "methods": [
+                "POST"
+            ],
+            "uriPattern": "/api-uri-pattern",
+            "receiver": "ReceiverName2",
+            "adapter": "ApiTestAdapter"
+        }
+    ]
+}

@@ -1,0 +1,4 @@
+<resultset>
+	<result param="r1" type="STRING">MESSAGE-CONTENTS</result>
+	<result param="r2" type="STRING">E</result>
+</resultset>

@@ -1,8 +1,7 @@
 <module>
 	<adapter name="FxF3InSender" active="${active.jms}">
-		<receiver className="nl.nn.adapterframework.receivers.GenericReceiver"
-			name="FxF3InSender">
-			<listener className="nl.nn.adapterframework.receivers.JavaListener"
+		<receiver>
+			<listener className="org.frankframework.receivers.JavaListener"
 				serviceName="ibis4test-FxF3InSender" />
 		</receiver>
 		<pipeline firstPipe="Send2Jms" transactionAttribute="Required">
@@ -10,40 +9,39 @@
 				<exit path="EXIT" state="success" />
 			</exits>
 			<pipe name="Send2Jms"
-				className="nl.nn.adapterframework.pipes.GenericMessageSendingPipe">
-				<sender className="nl.nn.adapterframework.jms.JmsSender"
-					jmsRealm="qcf" destinationName="jms/i4testiaf_in">
+				className="org.frankframework.pipes.SenderPipe">
+				<sender className="org.frankframework.jms.JmsSender"
+					jmsRealm="qcf" destinationName="${jms.destination.i4testiaf_in}">
 					<param name="SOURCE" value="${hostname}_I4TIAFFXF3" />
 				</sender>
-				<messageLog className="nl.nn.adapterframework.jdbc.JdbcTransactionalStorage"
-					jmsRealm="jdbc" slotId="${applicationId}/FxF3InSender" />
+				<messageLog className="org.frankframework.jdbc.JdbcTransactionalStorage"
+					slotId="${applicationId}/FxF3InSender" />
 				<forward name="success" path="echo" />
 			</pipe>
-			<pipe name="echo" className="nl.nn.adapterframework.pipes.EchoPipe"
+			<pipe name="echo" className="org.frankframework.pipes.EchoPipe"
 				getInputFromSessionKey="originalMessage">
 				<forward name="success" path="EXIT" />
 			</pipe>
 		</pipeline>
 	</adapter>
 	<adapter name="FxF3InListener" active="${active.jms}">
-		<receiver className="nl.nn.adapterframework.receivers.GenericReceiver"
-			name="FxF3InListener" transactionAttribute="Required">
-			<listener className="nl.nn.adapterframework.extensions.fxf.FxfListener"
-				destinationName="jms/i4testiaf_in" jmsRealm="qcf" messageSelector="SOURCE='${hostname}_I4TIAFFXF3'"
+		<receiver transactionAttribute="Required">
+			<listener className="org.frankframework.extensions.fxf.FxfListener"
+				destinationName="${jms.destination.i4testiaf_in}" jmsRealm="qcf" messageSelector="SOURCE='${hostname}_I4TIAFFXF3'"
 				createProcessedDirectory="true" />
-			<errorStorage className="nl.nn.adapterframework.jdbc.JdbcTransactionalStorage"
-				jmsRealm="jdbc" slotId="${applicationId}/FxF3InListener" />
+			<errorStorage className="org.frankframework.jdbc.JdbcTransactionalStorage"
+				slotId="${applicationId}/FxF3InListener" />
 		</receiver>
 		<pipeline firstPipe="EchoPipe" transactionAttribute="Required">
 			<exits>
 				<exit path="EXIT" state="success" />
 			</exits>
 			<inputValidator
-				className="nl.nn.adapterframework.extensions.fxf.FxfXmlValidator"
+				className="org.frankframework.extensions.fxf.FxfXmlValidator"
 				direction="receive" />
-			<inputWrapper className="nl.nn.adapterframework.extensions.fxf.FxfWrapperPipe"
+			<inputWrapper className="org.frankframework.extensions.fxf.FxfWrapperPipe"
 				direction="unwrap" />
-			<pipe name="EchoPipe" className="nl.nn.adapterframework.pipes.EchoPipe">
+			<pipe name="EchoPipe" className="org.frankframework.pipes.EchoPipe">
 				<forward name="success" path="EXIT" />
 			</pipe>
 		</pipeline>

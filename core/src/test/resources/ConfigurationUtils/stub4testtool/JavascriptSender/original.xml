@@ -1,0 +1,26 @@
+<configuration>
+	<adapter name="JavascriptSender">
+		<receiver name="JavascriptSender">
+			<listener
+				className="org.frankframework.receivers.JavaListener"
+				name="JavascriptSender"
+			/>
+		</receiver>
+
+		<pipeline>
+			<exits>
+				<exit path="READY" state="success"/>
+			</exits>
+			<pipe
+				name="Call Sender"
+				className="org.frankframework.pipes.SenderPipe"
+				>
+				<sender className="org.frankframework.senders.JavascriptSender"
+					jsFileName="JavaScript/JavascriptTest.js"
+					jsFunctionName="f2"
+					engineName="J2V8"/>
+				<forward name="success" path="READY"/>
+			</pipe>
+		</pipeline>
+	</adapter>
+</configuration>

@@ -1,0 +1,27 @@
+<configuration>
+	  <adapter name="SendTibcoMessage">
+      <receiver name="testtool-SendTibcoMessage">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-SendTibcoMessage"/>
+      </receiver>
+		    <receiver>
+			      <listener className="org.frankframework.receivers.JavaListener"
+                   name="SendTibcoMessage"/>
+		    </receiver>
+      <receiver name="testtool-SendTibcoMessage-1">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-SendTibcoMessage-1"/>
+      </receiver>
+		    <pipeline firstPipe="SendTibcoMessage">
+			      <exits>
+				        <exit path="EXIT" state="success"/>
+			      </exits>
+			      <pipe name="sendTibcoMessage"
+               className="org.frankframework.pipes.SenderPipe">
+            <sender className="org.frankframework.senders.IbisJavaSender"
+                    serviceName="testtool-sendTibcoMessage"/>
+				        <forward name="success" path="EXIT"/>
+			      </pipe>
+		    </pipeline>
+	  </adapter>
+</configuration>

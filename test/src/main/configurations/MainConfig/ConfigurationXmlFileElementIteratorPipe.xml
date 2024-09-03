@@ -1,8 +1,7 @@
-<ibis>
+<module>
 	<adapter name="XmlFileElementIteratorPipe">
-		<receiver className="nl.nn.adapterframework.receivers.GenericReceiver"
-			name="XmlFileElementIteratorPipe">
-			<listener className="nl.nn.adapterframework.receivers.JavaListener"
+		<receiver>
+			<listener className="org.frankframework.receivers.JavaListener"
 				serviceName="ibis4test-XmlFileElementIteratorPipe" />
 		</receiver>
 		<pipeline firstPipe="getRequest">
@@ -10,39 +9,38 @@
 				<exit path="EXIT" state="success" />
 			</exits>
 
-			<pipe name="getRequest" className="nl.nn.adapterframework.pipes.XsltPipe"
-				xpathExpression="request" sessionKey="originalRequest">
+			<pipe name="getRequest" className="org.frankframework.pipes.XsltPipe"
+				xpathExpression="request" storeResultInSessionKey="originalRequest" preserveInput="true">
 				<forward name="success" path="switchMode" />
 			</pipe>
 
-			<pipe name="switchMode" className="nl.nn.adapterframework.pipes.XmlSwitch"
+			<pipe name="switchMode" className="org.frankframework.pipes.XmlSwitch"
 				xpathExpression="request/@mode">
 				<forward name="name" path="iterate_name" />
 				<forward name="chain" path="iterate_chain" />
 			</pipe>
 
 			<pipe name="iterate_name"
-				className="nl.nn.adapterframework.pipes.XmlFileElementIteratorPipe"
+				className="org.frankframework.pipes.XmlFileElementIteratorPipe"
 				elementName="Person" getInputFromSessionKey="originalRequest">
-				<sender className="nl.nn.adapterframework.senders.IbisLocalSender"
+				<sender className="org.frankframework.senders.IbisLocalSender"
 					javaListener="XmlFileElementIteratorPipe_node" />
 				<forward name="success" path="EXIT" />
 			</pipe>
 
 			<pipe name="iterate_chain"
-				className="nl.nn.adapterframework.pipes.XmlFileElementIteratorPipe"
+				className="org.frankframework.pipes.XmlFileElementIteratorPipe"
 				elementChain="GetPartiesOnAgreementRLY;PartyAgreementRole;PartyInternalAgreementRole;Party;Person"
 				getInputFromSessionKey="originalRequest">
-				<sender className="nl.nn.adapterframework.senders.IbisLocalSender"
+				<sender className="org.frankframework.senders.IbisLocalSender"
 					javaListener="XmlFileElementIteratorPipe_node" />
 				<forward name="success" path="EXIT" />
 			</pipe>
 		</pipeline>
 	</adapter>
 	<adapter name="XmlFileElementIteratorPipe_node">
-		<receiver className="nl.nn.adapterframework.receivers.GenericReceiver"
-			name="XmlFileElementIteratorPipe_node">
-			<listener className="nl.nn.adapterframework.receivers.JavaListener"
+		<receiver>
+			<listener className="org.frankframework.receivers.JavaListener"
 				name="XmlFileElementIteratorPipe_node" />
 		</receiver>
 		<pipeline firstPipe="echo">
@@ -50,10 +48,10 @@
 				<exit path="EXIT" state="success" />
 			</exits>
 
-			<pipe name="echo" className="nl.nn.adapterframework.pipes.XsltPipe"
+			<pipe name="echo" className="org.frankframework.pipes.XsltPipe"
 				xpathExpression="concat(Person/PersonName/Id,'_',Person/Demographics/Gender)">
 				<forward name="success" path="EXIT" />
 			</pipe>
 		</pipeline>
 	</adapter>
-</ibis>
+</module>

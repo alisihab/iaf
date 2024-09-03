@@ -1,0 +1,16 @@
+<configuration>
+	<adapter name="MultipleReceivers">
+		<receiver name="JmsListener" transactionAttribute="Required">
+			<listener name="JmsListener"
+				className="org.frankframework.jms.JmsListener"
+				lookupDestination="false"/>
+		</receiver>
+
+		<receiver name="JavaListener">
+			<listener
+				className="org.frankframework.receivers.JavaListener"
+				name="SenderSeries"
+			/>
+		</receiver>
+	</adapter>
+</configuration>

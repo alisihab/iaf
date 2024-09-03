@@ -1,37 +1,491 @@
-Ibis AdapterFramework release notes
+Frank!Framework Release Notes
 ===================================
 
-[Tags](https://github.com/ibissource/iaf/releases)
-[JavaDocs](https://javadoc.ibissource.org/latest/)
+[Tags](https://github.com/frankframework/frankframework/releases)
+[JavaDocs](https://javadoc.frankframework.org/)
+
+Upcoming (8.3)
+--------------
+[Commits](https://github.com/frankframework/frankframework/compare/8.2-release...HEAD)
+
+WebServiceListeners now use a different way of returning Multipart Attachments. The old behavior can be restored by setting 'WebServiceListener.backwardsCompatibleMultipartNotation=true'.
+
+
+8.2.0 - Jul 12th, 2024
+--------------
+[Commits](https://github.com/frankframework/frankframework/compare/v8.0.0...v8.1.0)
+
+Moved to Spring 6 and Spring Boot 3. Requires Jakarta package names.
+Requires JDK 17 or later, tested on JDK 17 and 21.
+Changed default log level from DEBUG to INFO, for environments that are not configured with `dtap.stage` at value: `ACC` or `PRD`. These are by default on WARN level.
+
+### Non backwards compatible changes
+- Transaction Manager BTM is removed. Switch over to Narayana Transaction Manager.
+- Only supports Tomcat 10.x or later. Tomcat 9.x or lower version, are no longer supported.
+- FileSystemPipes and FileSystemSenders now have new forwards for `fileNotFound`, `folderNotFound`, `fileAlreadyExists`, `folderAlreadyExists`. Some actions, such as removing a non-existing folder, were previously ignored but can now trigger one of these forwards. If such a forward is not defined, then the pipe or sender will go to the `exception` forward or if that is not defined either, trigger an exception, which was previously ignored. Adding the specific exception forward and pointing it to the next pipe will solve this.
+- The `MoveFilePipe` was deprecated for a while and has been removed now. Please use the `LocalFileSystemPipe` if you need to move a file.
+- In the FixedResultPipe, the deprecated `setUseOldSubstitutionStartDelimiter` has been removed. This enforced using the `${..}` syntax, but now only the `?{..}` is supported.
+
+8.1.0 - May 22nd, 2024
+--------------
+[Commits](https://github.com/frankframework/frankframework/compare/v8.0.0...v8.1.0)
+
+Requires JDK 17 or later, tested on JDK 17 and 21.
+
+### Non backwards compatible changes
+- Larva package is renamed from `testtool` to `larva`. References inside the Larva property files to the `testtool` package should be updated to larva. Such as: `org.frankframework.testtool.FileSender` -> `org.frankframework.larva.FileSender`. It still works with the old package name in 8.1, as a compatibility feature.
+- CompressPipe pattern attributes have been deprecated, please use the appropriate parameters and resolve the pattern in there instead. The result has now also by default been changed to the file/zip-entry instead of a file location.
+- By default, the Param substitution delimiter has been changed from `${` to `?{` so it's consistent with the `FixedQuerySender`. Backwards compatibility key `useOldSubstitutionStartDelimiter` has been added so minimal change is required during upgrades. Note that when using caches in combination with `diskPersistent="true"` you may need to purge your cache!
+
+8.0.0 - December 23rd, 2023
+--------------
+[Commits](https://github.com/frankframework/frankframework/compare/v7.9-RC1...v7.9.0)
+
+Requires JDK 11 or later, tested on JDK 11, 17 and 21.
+Package `nl.nn.adapterframework` is renamed to `org.frankframework`.
+Removed many deprecated features.
+
+### Non backwards compatible changes
+- CreateRestViewPipe has been removed. It is no longer possible to open the old (blue) user interface.
+- IBulkDataListener has been removed. This feature was only supported through custom listeners and not tested.
+- IbisTester class has been moved from the CORE module to LARVA
+- IteratingPipes with `parallel=true` now throws exceptions. In order to suppress this behaviour please set `ignoreExceptions=true`.
+- Remove support for Maven Jetty plugin
+- Inside Larva configuration XML files, the `nl.nn.adapterframework.` package should be replaced with `org.frankframework.`. This is due to the package name change in the framework. Still works in 8.0 as a compatibility feature.
+
+7.9.1 - March 1st, 2024
+---
+[Commits](https://github.com/frankframework/frankframework/compare/v7.9.0...v7.9.1)
+
+Improved Connection Pooling mechanism for JMS and JDBC connections.
+Reduced default JMS connection amount.
+Front-end Console fixes.
+
+7.9.0 - December 14th, 2023
+---
+[Commits](https://github.com/frankframework/frankframework/compare/v7.8-RC1...v7.9.0)
+
+### Non backwards compatible changes
+
+- IbisLocalSender no longer throws exceptions if exit.state="ERROR" situations, but provides forwardName 'exception'. The sessionKey 'originalResult' is no longer used.
+- For sending replies from the JmsListener to a fixed destination the attribute 'replyDestinationName' should be used instead of a nested JmsSender, to avoid clutter in the debugger reports
+- Session variable 'id' has been renamed 'mid', session variables 'messageId' and 'tcid' have been removed.
+ - Session variable 'exitcode' has been renamed to 'exitCode'.
+- Duplicate detection might fail for messages received after an upgrade if the earlier version of the message was received before the upgrade. 
+  This is in cases where a received (JMS) correlationId is used to send a response.
+- The ZipWriterPipe and ZipWriterSender have undergone major changes. In order to help the upgrading processes they both have a backwardsCompatibility attribute to revert to the old behavior. Please migrate away from this as soon as possible.
+    - The ZipWriterPipe with action=WRITE does no longer has its input as its response, but rather a null message. If necessary, the previous behavior can be obtained by setting preserveInput=true.
+    - The ZipWriterSender with no content parameter does no longer has its input as its response, but rather a null message.
+    - The ZipWriterPipe CLOSE action will now return the ZIP archive! It is no longer required to create a file first (with action OPEN) nor is it required to specify a filename on the OPEN action.
+
+- Parameter with an attribute value set to an empty string will have the empty string as result. Previously the input message would be used. This behaviour can be reobtained by settin: defaultValueMethod="input".
+- Larva context has changed from '<rootcontext>/larva' to '<rootcontext>/iaf/larva'. 
+- Larva default timeout has been decreased to 10s, and to 2s for local tests
+- The CMIS, Aspose and AWS modules have been added to our webapp artifact. The servlet endpoints are disabled by default.
+    - In order to enable the CMIS endpoints either of the following properties must be set:
+    `servlet.AtomPub10.enabled=true`,
+    `servlet.AtomPub11.enabled=true`,
+    `servlet.WebServices10.enabled=true`,
+    `servlet.WebServices11.enabled=true` or 
+    `servlet.BrowserBinding.enabled=true`
+- Some API endpoints have been deprecated. Users are encouraged to change over to the new API, however in order to restore the deprecated functionality the property 'iaf-api.allowDeprecated' can be set to true.
+- ApiListener eTag generation has been disabled by default, set api.etag.enabled=true to enable default etag generation.
+
+
+7.8-RC1
+---
+[Commits](https://github.com/frankframework/frankframework/compare/v7.7...v7.8-RC1)
+
+LCM dependencies (where possible)
+Generic bugfixes
+Performance enhancements
+
+- Add Message Context (#2746)
+- MicroMeter based statistics collection (#2841)
+- Add default Exit to PipeLine (#2851)
+- Add MediaTypes and Diacritic detection to Messages (#2790)
+- Fix framework util queries to be PostgreSQL compliant (#2888 + #2920)
+- Add JSON compare to Larva (#2914)
+- Display all entries of CredentialFactory at SecurityItems (#2883)
+- Introduce connection overview page (#2929)
+- Enable Narayana XA transaction management for PostgreSQL (#2949)
+- Introduce inline store overview page (#2958)
+- Refactor FlowGenerator and prepare for Mermaid flows (#3025 + #3084 + #3271)
+- Implement simple MSAL for Exchange (#3055 + #3368)
+- Catch all unhandled FF!API exceptions (#3090 + #3365)
+- Convert servlets to startup without web.xml definitions (#3096)
+- Use scenario specific correlationId in Larva (#3215)
+- Avoid problematic sysids for XPath expressions (#3234)
+- Refactor FixedResultPipe (#3181)
+- Add attribute connectionTimeToLive to HttpSenders (#3253)
+- Use build-in HTTP retry mechanism (#3281)
+- Improve PipeForward handling (#3289)
+- Support Base64 encoded attachments in WebServiceListener (#3313)
+- Add WebContent folder option to serve web content through configurations (#3317)
+- Bump Xerces-J from 2.12.1-xml-schema-1.1 to 2.12.2-xml-schema-1.1 (#3311)
+- Include hashcode for message in logging (#3332 + #3342)
+- Implement index checks for all DBMSes (#3326)
+- Allow receiver to start from status EXCEPTION_STARTING/EXCEPTION_STOPPING (#3349 + #3367)
+- Avoid ALL FILES execute permission exception when loading J2V8 (#3354)
+- Support multiple SapListeners (#3369)
+- Add WildFly docker images (#3315)
+- Fix ShadowSender (#3379)
+- Add xslt3 support as supported in Saxon HE version (#3130)
+- Enable to view log files even when application did not start properly (#3384)
+- Jakarta dependencies are used where possible, please check your dependency tree for duplicates after updating (#3405)
+- Fix editing database CRON triggers (#3522)
+- Fix default JDBC datasource as first selected entry (#3510)
+- Show JDBC connections when not configured as JmsRealm (#3505)
+- Only retry http entities when Message.isRepeatable (#3518)
+- Add option to disable JMX (#3501)
+- Allow XML to be parsed directly in Text2XmlPipe (#3532)
+- Correct waiting for no messages in process (#3552)
+- Fix MessageOutputStream transaction resume in child thread (#3561)
+- Fix Xalan racecondition (NPEs) when using lexical handlers (#3563)
+- Make MultipartXml message capable of being repeated (#3564)
+- Allow senders to provide pipe-forward hints (#3556)
+- Introduce Spring Security (#3580)
+- Add JsonValidator (#3555)
+- Disable Configuration name and version attributes (#3614)
+- Disable presumedTimeOutInterval by default (#3644)
+
+
+### Non backwards compatible changes
+
+- HttpSender no longer treats input message as parameters by default. For 7.7 compatibility, set attribute treatInputMessageAsParameters=true
+- WebServiceListener does no longer (simultaneously) bind to the listener-name AND address attribute.
+- Larva httpRequest parameter is no longer supported
+- Json2XmlValidator input format session key prefix changed from "Json2XmlValidator.inputformat " to "Json2XmlValidator.inputFormat " (capital F)
+- property xml.namespaceAware.default=true by default. When set to false, parsing is done via a DOM source, or namespaces are removed before XSLT transformations.
+- Parameter handling for types Node and DomDoc is namespace aware, starting from version 7.6. To remove namespaces, use set attribute removeNamespaces="true"
+- Larva uses different correlationId in the format *Test Tool correlation id(${counter})* for each scenario.
+- To use files in ZipIteratorPipe and UnzipPipe the attribute processFilename="true" must be set. Otherwise the data will not be interpreted as a filename, but as data.
+- JsonPipe version 1 has been removed. Json to Xml conversion has slightly changed:
+  - null values are rendered as '<elem nil="true"/>' instead of '<elem>null</elem>'
+  - default array element containers are '<item>' instead of '<array>'
+  - multidimensional arrays with scalar values are not flattened into one dimensional arrays any more
+- MessageSendingPipe and descendants (like SenderPipe and ForEachChildElementPipe) no longer set presumedTimeOutInterval by default.
+
+
+7.7
+---
+
+[Commits](https://github.com/frankframework/frankframework/compare/v7.6.1...v7.6.2)
+
+- New FrankDoc XSD and website
+- LCM Dependencies
+  - Apache Commons Lang
+  - Apache Commons Digester
+  - Apache Commons Beanutils
+  - Apache Commons Fileupload
+  - Apache Commons IO
+  - Apache Commons Codec
+  - Apache Http Components
+  - Apache Ant
+  - Apache CXF
+  - EhCache
+  - Quartz
+  - Log4J2
+  - Spring 5
+  - Jackson JSON Provider
+- Add Narayana Transaction Manager
+- Create new Spring context per configuration
+- SoapErrorMessage has been renamed to SoapErrorMessageFormatter
+- FixedErrorMessage has been renamed to FixedErrorMessageFormatter
+- Enable validators and wrappers to forward to Exits
+- Attribute 'fileName' has been renamed to 'filename'
+- Support reading JMS bytes messages (#1733)
+- Attribute 'wildCard' has been renamed to 'wildcard'
+- Refactor Configuration and Application Warnings
+- Add log settings page
+- Add validator and wrapper statistics
+- Auto detect namedParameters in the query
+- Add plugable CredentialProviders, including FileSystemCredentialProvider/AnsibleVaultCredentialFactory
+- Fix default datasource support for JdbcTableListener
+- Refactor Monitoring
+- Support programmatic retry
+- Fix and refactor ftpSession/ftpFileSystem
+- Fix log statements with throwables
+- Enable use of Tibco JNDI
+- Deduplicate stacktraces in the log files
+- Fix Tibet2 storage when retrieving blob values
+- Add index for duplicates checks
+- Rename databaseAutoLoad property to configurations.database.autoLoad
+- Introduce special stop condition forwards to IteratingPipe
+- Add status file to Bitronix TransactionManager
+- Refactor Job Definitions
+- Add ability to find absolute resources in local ClassLoader
+- Add Json2XmlValidator ability to determine outputFormat from sessionkey
+- Refactor configuraition parsing
+- Avoid log4j2 getSource() method call
+- Remove autoreload check when autoDatabaseClassLoader is enabled
+- Add line numbers on GUI Configurations page
+- Introduce jms.lookupDestination property
+- Change adapter status to warning in case Listener connection fails
+- Deprecate PutParametersInSession pipe
+- Don't pass HttpInputStream when no content is available
+- Add JDK 11 support
+- Add link with configuration and line to configuration warnings
+
+
+### Non backwards compatible changes
+
+- IbisTester is the only role that can execute test-a-pipeline
+- ManageDatabase adapter has been disabled by default on ACC and PRD environments
+- JsonPipe produces json without root element by default. The previous behaviour can be obtained by setting version="1" (deprecated)
+- CompareStringPipe xml=true, now does an (actual) XML compare; ignoring attribute order and whitespaces.
+- Remove Struts management console (including the IAF-WebControl Configuration)
+- Server healthcheck at /iaf/api/server/health is now publicly accessible. 
+  It will return 200 when all adapters are up, 503 when one or more are stopped. Previously, 401 was returned in all cases when called unauthenticated
+- Property references like `${property}` in configuration files are now resolved *after* the XML is parsed, and should therefor no longer contain characters that 
+  are invalid in XML encoded as entities. So characters like '<', '>' and '"' should appear 'as is' in properties, not as '&lt;', '&gt' and '&quot'.
 
 
 
-Upcoming
+7.6.2
 --------
+[Commits](https://github.com/frankframework/frankframework/compare/v7.6.1...v7.6.2)
 
-[Commits](https://github.com/ibissource/iaf/compare/v7.5-RC1...HEAD)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png)](https://travis-ci.org/ibissource/iaf)
+- Fix gui log error message when more then x files (#2426)
+- Ladybug report keeps in progress while adapter is finished (#2496)
+- Remove Rownum max value upper limit when using Browse Tables (#2515)
+- Update log4j2 (CVE-2021-44228) (#2527)
+
+7.6.1
+--------
+[Commits](https://github.com/frankframework/frankframework/compare/v7.6...7.6-release)
+
+- Do not close zip archive during processing (#2109)
+- Fix log statements with throwables (#2135)
+- Fix ByteStream readers in JsonXMLReader (#2155)
+- Add ability to filter messages by message text (#2138)
+- Fix errorstore download message action (#2200)
+- Support classpath protocol in ClassLoaderURIResolver (#2193)
+- Add index for duplicates checks (#2208)
+- Fix Tibet2 storage when retrieving blob values (#2209)
+- Fix TransformerPool initialization with different xslt versions in XmlSwitch pipe (#2221)
+- Use configured success forward in DirectWrapperPipe (#2229)
+- Skip forward path validation if there is no pipeline (#2239)
+- JmsFacade send Message properties as String (#2241)
+- Add ability to find absolute resources in local ClassLoader (#2253)
+- Avoid log4j2 getSource() method call (#2339)
+- Fix migrator resources being found in other classloaders (#2342)
+- Remove autoreload check when autoDatabaseClassLoader is enabled (#2362)
+- Escape URL in GUI logging page (#2370)
+- Fix tiff file conversion (Aspose) (#2371)
+- Fix incompatible types for the inputstream parameters (#2368)
 
 
-- reset Adapter Statistics by the hour when entering a new hour time slot
-- introduced property jdbc.datasource.default, with default value jdbc/${instance.name.lc}
-- introduced attribute combineBlocks on ForEachChildElementPipe, that can be set to false to leverage BlockEnhancedCapabilites of the configured sender
+7.6
+--------
+[Commits](https://github.com/frankframework/frankframework/compare/v7.6-RC2...v7.6)
+
+- Add writeLineSeparator attribute to FileSystemPipe (#1916)
+- Fix exception pipe should to not follow exception forward (#1913)
+- Fix Single item combined blocks handling (#1928)
+- Fix ForEachChildElementPipe exception handling (#1956)
+- Only append FF! version to API endpoints when it's a HTML file (#1961)
+- Fix FTP filesystem (#1971)
+- Add charset attribute for the filesystems (#1945)
+- Browse messages from external jdbc errorStorage (#2000)
+- Add option to use ServerFileName as the filename to FxfWrapperPipe (#2019)
+- Throw exception when unable to load Promise.JS (#2037)
+- Skip ACL when no user or empty username is found (#2062)
+
+
+7.6-RC2
+--------
+[Commits](https://github.com/frankframework/frankframework/compare/v7.6-RC1...v7.6-RC2)
+
+- Reduce debug logging and fix JBoss project names (#1592)
+- Fix 'Move to InProcess' in transaction (#1603)
+- Avoid recursion explosion in IbisException.getMessage() (#1623)
+- Do not canonicalize SenderPipe to GenericMesageSendingPipe (#1631)
+- Fix bytearray support for SOAPProviderBase (#1682)
+- Skip proprietary projects when building external PRs (#1642 + #1646)
+- Fix Out of memory using maxConcurrentThreads in ParallelSenders (#1688)
+- Fix IOException in UnzipPip when collectFileContents=true (#1678)
+- Fix NPE on Exit with empty=true (#1679)
+- Make filenames mandatory in onCompletedTransferNotify (#1665)
+- Enable validators and wrappers to forward to Exits (#1695)
+- Fix 'resend message' for JdbcListeners browsed wrong message (#1732)
+- Fix Http Streams not always closed (#1741)
+- JdbcTableListener must specify statusValueError (#1754)
+- Backport Docker changes to 7.6 (#1781)
+- Fix calculating root validations from message root attributes (#1799)
+- Backport closeOnExit mechanism + message.toString() (#1806)
+- Add validator and wrapper statistics 7.6 (#1858)
+- Throw Exception when JmsRealm cannot be found (#1857)
+- Show error warning only when server in state error (#1860)
+- Trim columnsReturned in FixedQuerySender (#1870)
+
+
+
+
+7.6-RC1
+--------
+[Commits](https://github.com/frankframework/frankframework/compare/v7.5...v7.6-RC1)
+
+- Debug streaming messages
+- Add TextSplitterPipe
+- Docker images for application servers Tomcat, WebSphere and JBoss
+- Docker images for various dbmses for iaf-test
+- Support multivalued parameters in json2xml
+- Unify listeners for generic file systems and database tables, support 'Move to Available'
+- Introduce DataSourceFactory and ConnectionFactoryFactory
+- Set datasourcename by default
+- Add SignaturePipe
+- Support automatic closing of streams
+- Support generation of SQL update script from Liquibase
+- Rework Locker 
+- Full DBMS support for H2, Oracle, MSSql, MySql, MariaDB and PostgreSQL
+- Use Message as primary input-output object for, e.g. for Pipes and Senders
+- Introduce RetryFlag, set as session variable if a message is retried
+- Introduce ImapFileSystem
+- Ability to generate OpenAPI 3.0 schemas
+- Handle BLOBs as bytes instead of characters
+- Configurable suppression of configuration warnings
+- Inline errorstorage and messagelog browsers
+- Introduce PeekUntransacted, to avoid excessive XA transactions
+- Support automatic translation of SQL dialects
+- Introduce optional OutputStreaming
+- Introduce block enabled senders, and support for it in Iterating Pipes
+- Fix adapter statistics by the hour
+- Support for optional request parameters in Json2XmlValidator
+- Add PgpPipe
+- Reset Adapter Statistics by the hour when entering a new hour time slot
+- Introduced property jdbc.datasource.default, with default value jdbc/${instance.name.lc}
+- Introduced attribute combineBlocks on ForEachChildElementPipe, that can be set to false to leverage BlockEnhancedCapabilites of the configured sender
 - Add possibility to put error details in ESB SOAP body response
-- Improve MessageStoreListener by adding peekUntransacted attribute
 - Add support for single pipeline SOAP 1.1 & 1.2 and REST JSON & XML, backed by XML-Schema validation, with OpenAPI 3.0 JSON Schema generation
+- Upgrade to Java 8
 
 ### Non backwards compatible changes
 
 - Change HashPipe attribute encoding into charset. Its default has changed from ISO8859-1 into UTF-8
+- Logging library Log4j has been upgraded to Log4j2, versions are not backwards compatible!
+- The RESTEasy library has been replaced with Apache-CXF, this might enable jBoss hosted applications to cleanup their customized ClassLoader configuration
+- The StaxParserFactory has been configured to always enable XML 1.1 content. You can validate this on the Security Items page under XML Components.
+
+### Breaking changes
+
+- If a DSRA9110E (ObjectClosedException) is encountered see issue #2015 (DSRA9110E: ResultSet is closed)
+- It is highly recommended not to use any custom file which overrides a file from the framework itself. In case it was required to override a file, do not forget to update the changes when upgrading the framework version! It is a good practice to keep the `.orig` suffixed original file also in the project to understand what change have been made. The changes in the custom file might have been included in the new version of the framework and the file may be no longer needed. If the changes are complicated to understand please consult the Frank!Framework Team.
+
+7.5
+--------
+
+[Commits](https://github.com/frankframework/frankframework/compare/v7.5-RC4...v7.5)
+
+- Sync testtool enable/disable buttons (#1036)
+- Fix #1029 handling absolute paths in LocalFileSystem (#1046)
+- Fix #1028 ShowIbisstoreSummary (#1047)
+- Add configuration name to adapter info + Fix uptime calculator (#1109)
+- Fix #1151 use original message id when resending (#1160)
+- Remove GTag and GDPR Cookie notification (#1184)
+- Change sap sncQop getter to int (#1182)
+- Fix #1098 Copy pipe parameters to sender in configure() (#1203)
+- Fix #1201 Correct ExchangeMailListeners handling of embedded CDATA (#1206)
+- Fix test-pipeline zip handling when unable to determine zip entry size (#1259)
+
+
+
+
+7.5-RC4
+--------
+
+[Commits](https://github.com/frankframework/frankframework/compare/v7.5-RC3...v7.5-RC4)
+
+- Set receiver color to red when in error (#761)
+- Set property to disable SecurityManager (#746)
+- Update login view and make it more usable (#786)
+- Multiple GUI fixes (#818)
+  - version of Frank (ear) does not show in info screen of the new GUI (#784)
+  - test-pipeline does not work with file upload (#798)
+  - Fix errorStorage deleteSelected (#810)
+  - Webservices page, ibisdoc link missing "/rest" part in the url (#795)
+  - Improve hover over message status
+  - Add jdbc query cookie and update manual url's
+  - Add errorstorage select messages
+- Fix auto choose sql querytype (select or other) (#821)
+- Fix maxThreadCount + cleanup old adapters in GUI 3.0 (#845)
+- Remove authentication for the base url and redirect to status (#847)
+- Add ability to change message encoding (#735)
+- Fix style on errorStorage page (subset of #584)
+- Fix NPEs while coverting rawMessage result to String
+- Make Jms afterMessageProcessed resilient to other message types (#861)
+- Fix GUI page names (#919)
+- Make GUI3 follow AdapterStatistics interface (#910)
+- Sort scheduler jobs by name (#886)
+- Fix GUI3.0 browse JMS queue (#951)
+- Fix #622 false alarm in PullingListenerContainers (#876)
+- Fix handling of unprocessesable messages + fix transacted tests #957
+- Fix Browse Queue in GUI 3.0 (#967)
+- Add ability to log out of the GUI 3.0 (#962)
+- Cleanup and correct RestListener ibisdoc (#1012)
+- Fix enddate copy paste typo (#1024)
+- Add gui notification when connection drops (#979)
+
+
+
+
+7.5-RC3
+--------
+
+[Commits](https://github.com/frankframework/frankframework/compare/v7.5-RC2...v7.5-RC3)
+
+- Fix GUI 3.0 global console warnings #505
+- Fix configurations being reloaded due to not having a (valid) version #506
+- Jdbc query listener does not update status #527
+- Make GUI 3.0 fields selectable again #539
+- Fix default order for irregular message store types #565
+- Fix Parameters using XSLT #570
+- Fix async issue when loading the gui #594
+- Release database connections in GUI #626
+- Restore attribute numberOfBackups on DirectoryListener #625
+- GUI 3.0 bugfixes #644, #617, #697
+- Improve logging #662, #682
+- Correct GUI statistics page #664
+- Avoid CXF publish check failure on WebSpere #645
+- Break endless recursion in StringResolver #692
+- Let JdbcTransactionalStorage return uniform responses for all dbmses #706
+- Update ladybug #708
+- Fix GUI 3.0 caching issues #722
+
+
+
+7.5-RC2
+--------
+
+[Commits](https://github.com/frankframework/frankframework/compare/v7.5-RC1...v7.5-RC2)
+
+- Nested stacktrace ends at ForEachChildElementPipe #425
+- Empty JDBC result throws NullPointerException #426
+- Updated test scenario expected result to recent snapshot version #427
+- WebServiceListeners are not registering on the correct SpringBus #445
+- Inconsequent use of Configuration(s) in menu, breadcrum and tabs #448
+- API json endpoint of statistics uses formatted strings for numbers #443
+- Security roles not showing new GUI #449
+- Browse Tables java.lang.stackoverflowerror #450
+- Confirmation prompt when deleting schedules (GUI 3.0) #452
+- Make minimize and maximize menu more intuitive #453
+- Center the minimized Frank!Framework logo in FireFox #454
+- ErrorStorage ignores "Show # entries" #457
+- GUI 3.0 stuck on error page when no error is present #461
+- Adapter statistics by the hour are not reset every hour #462
+- JSON validator gives error mapping repeating group #468
+- Parameters used to map to the xsd values should be ignored when empty or Null #473
+- Configuration messages are not shown in GUI 3.0 #480
+- Ability to open link to GUI 1.2 on new tab #481
+- Receivers/Listeners using JMS should support credentials #491
+- HttpSender ContentType getter method type is not the same as the setter #492
 
 
 
 7.5-RC1
 --------
 
-[Commits](https://github.com/ibissource/iaf/compare/v7.4...v7.5-RC1)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v7.5-RC1)](https://travis-ci.org/ibissource/iaf)
-
+[Commits](https://github.com/frankframework/frankframework/compare/v7.4...v7.5-RC1)
 
 - Make attribute firstPipe in PipeLine optional. When empty, the first Pipe in the Pipeline configuration
   is considedred to be the first. Similarly the success forward defaults to the next Pipe in the PipeLine.
@@ -101,8 +555,7 @@ Upcoming
 7.4
 --------
 
-[Commits](https://github.com/ibissource/iaf/compare/v7.3...v7.4)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v7.4)](https://travis-ci.org/ibissource/iaf)
+[Commits](https://github.com/frankframework/frankframework/compare/v7.3...v7.4)
 
 - Improve validation config warnings
 - ShowConfigurationStatus - improve error view
@@ -122,8 +575,7 @@ Upcoming
 7.3
 --------
 
-[Commits](https://github.com/ibissource/iaf/compare/v7.2...v7.3)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v7.3)](https://travis-ci.org/ibissource/iaf)
+[Commits](https://github.com/frankframework/frankframework/compare/v7.2...v7.3)
 
 - Refactor CmisListener to an event based listener, you can now have multiple listeners listening to different events
 - The cmis bridge functionality on the sender has been removed. In order to use the bridge you need to configure properties in the WAR/EAR file. See CmisSessionBuilder for more information about the properties that can be set
@@ -134,8 +586,7 @@ Upcoming
 7.3-RC1
 --------
 
-[Commits](https://github.com/ibissource/iaf/compare/v7.2...v7.3-RC1)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v7.3-RC1)](https://travis-ci.org/ibissource/iaf)
+[Commits](https://github.com/frankframework/frankframework/compare/v7.2...v7.3-RC1)
 
 - Generate IbisDoc and XSD and support beautiful configuration xml. The XSD can be used for code completion of beautiful Ibis configurations in Eclipse
 - Use XSLT 2.0 instead of 1.0 for configuration tweaks (e.g. stub4testtool.xsl)
@@ -178,8 +629,7 @@ Upcoming
 7.2
 --------
 
-[Commits](https://github.com/ibissource/iaf/compare/v7.1...v7.2)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v7.2)](https://travis-ci.org/ibissource/iaf)
+[Commits](https://github.com/frankframework/frankframework/compare/v7.1...v7.2)
 
 - Fix NPE in BatchFileTransformerPipe when using an IbisLocalSender
 - Various bugfixes en performance improvements in SOAPProviders (WebServiceListener)
@@ -202,8 +652,7 @@ Upcoming
 7.1
 --------
 
-[Commits](https://github.com/ibissource/iaf/compare/v7.1-B4...v7.1)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v7.1)](https://travis-ci.org/ibissource/iaf)
+[Commits](https://github.com/frankframework/frankframework/compare/v7.1-B4...v7.1)
 
 - Fix NPE in HttpSender when no charset is supplied in multipart response
 - Modify GetFromSession to get key from input as well as sessionKey
@@ -228,8 +677,7 @@ Upcoming
 7.1-B4
 ---
 
-[Commits](https://github.com/ibissource/iaf/compare/v7.1-B3...v7.1-B4)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v7.1-B4)](https://travis-ci.org/ibissource/iaf)
+[Commits](https://github.com/frankframework/frankframework/compare/v7.1-B3...v7.1-B4)
 
 
 - Prevent poll guard to stop and start listener when recovering
@@ -247,8 +695,7 @@ Upcoming
 7.1-B3
 ---
 
-[Commits](https://github.com/ibissource/iaf/compare/v7.1-B2...v7.1-B3)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v7.1-B3)](https://travis-ci.org/ibissource/iaf)
+[Commits](https://github.com/frankframework/frankframework/compare/v7.1-B2...v7.1-B3)
 
 - Many IAF GUI 3.0 improvements
 - Fix Ladybug
@@ -267,8 +714,7 @@ Upcoming
 7.1-B2
 ---
 
-[Commits](https://github.com/ibissource/iaf/compare/v7.1-B1...v7.1-B2)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v7.1-B2)](https://travis-ci.org/ibissource/iaf)
+[Commits](https://github.com/frankframework/frankframework/compare/v7.1-B1...v7.1-B2)
 
 - Add updateEtag sessionKey to the ApiListener so it can be changed at runtime
 - Modify HttpSender logging to only give warnings for 4xx (client errors) and 5xx (server errors)
@@ -297,8 +743,7 @@ Upcoming
 7.1-B1
 ---
 
-[Commits](https://github.com/ibissource/iaf/compare/v7.0-RC3...v7.1-B1)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v7.1-B1)](https://travis-ci.org/ibissource/iaf)
+[Commits](https://github.com/frankframework/frankframework/compare/v7.0-RC3...v7.1-B1)
 
 - Move 'Dynamic parameters' from showConfiguration to showEnvironmentVariables
 - Show provided JmsDestinations with usage in showSecurityItems
@@ -384,8 +829,7 @@ Upcoming
 7.0-RC3
 ---
 
-[Commits](https://github.com/ibissource/iaf/compare/v7.0-RC2...v7.0-RC3)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v7.0-RC3)](https://travis-ci.org/ibissource/iaf)
+[Commits](https://github.com/frankframework/frankframework/compare/v7.0-RC2...v7.0-RC3)
 
 - Refactor ReplacerPipe replaceNonXmlChar and fix javadoc
 - Support Unicode supplementary characters (like a smiley) in replace/stripNonValidXmlCharacters (which is used in ReplacerPipe). In the old code a Unicode supplementary character like a smiley was seen as two characters which would both be replaced/stripped. To be backwards compatible the Unicode supplementary characters are still replaced/stripped (by one character instead of two) but can be allowed using allowUnicodeSupplementaryCharacters
@@ -402,13 +846,12 @@ Upcoming
 7.0-RC2
 ---
 
-[Commits](https://github.com/ibissource/iaf/compare/v7.0-RC1...v7.0-RC2)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v7.0-RC2)](https://travis-ci.org/ibissource/iaf)
+[Commits](https://github.com/frankframework/frankframework/compare/v7.0-RC1...v7.0-RC2)
 
 - Ignore import with namespace but without schemaLocation (fix on previous commit 'Support schema attribute with config in database and refactor ClassUtils.getResourceURL()')
 - Rewrite dependencies on removed URL fallback in ClassUtils.getResourceURL()
 - Make it possible to disable lastModifiedDelta in CleanupOldFilesPipe
-- Fix WebServiceListener.processRequest() not being called by ServiceDispatcher (fix on previous commit 'Refactor http package to use IPipeLineSession instead of Map...')
+- Fix WebServiceListener.processRequest() not being called by ServiceDispatcher (fix on previous commit 'Refactor http package to use PipeLineSession instead of Map...')
 - Fix cache not returning valueXPath transformed value in first call
 - Add possibility to cache and share transformers (to save memory)
 - Make ParallelSenders (with XsltSender) thread safe
@@ -421,8 +864,7 @@ Upcoming
 7.0-RC1
 ---
 
-[Commits](https://github.com/ibissource/iaf/compare/v7.0-B3...v7.0-RC1)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v7.0-RC1)](https://travis-ci.org/ibissource/iaf)
+[Commits](https://github.com/frankframework/frankframework/compare/v7.0-B3...v7.0-RC1)
 
 - Add support for integer and boolean parameters when using QuerySenders
 - Fix broken "Show configuration warnings only at relevant configuration"
@@ -475,8 +917,7 @@ Upcoming
 7.0-B3
 ---
 
-[Commits](https://github.com/ibissource/iaf/compare/v7.0-B2...v7.0-B3)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v7.0-B3)](https://travis-ci.org/ibissource/iaf)
+[Commits](https://github.com/frankframework/frankframework/compare/v7.0-B2...v7.0-B3)
 
 - Add json to xml and xml to json conversion as well as json validation to xmlvalidators
 - Prevent XML Entity Expansion (XEE) injection
@@ -507,8 +948,7 @@ Upcoming
 7.0-B2
 ---
 
-[Commits](https://github.com/ibissource/iaf/compare/v7.0-B1...v7.0-B2)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v7.0-B2)](https://travis-ci.org/ibissource/iaf)
+[Commits](https://github.com/frankframework/frankframework/compare/v7.0-B1...v7.0-B2)
 
 - Fix IFSA no longer gives a warning when the managed connection factory can't be found
 - Add consumes and produces option to rest endpoints to set mediatypes, this also transforms the data from and to JSON/XML when set
@@ -562,7 +1002,7 @@ Upcoming
 - Fix JDBC driver default date format to yyyy-MM-dd
 - Fix JDBC driver default timestamp format to yyyy-MM-dd HH:mm:ss
 - Bugfix in ShowIbisstoreSummary "(SQLServerException) SQLState [S00010], errorCode [195]: 'to_char' is not a recognized built-in function name." 
-- Add DllServiceDispatcher see [ibis-servicedispatcher](https://github.com/ibissource/ibis-servicedispatcher/commit/f759f897b063757bcc7a50229715035159d79dd5)
+- Add DllServiceDispatcher see [ibis-servicedispatcher](https://github.com/frankframework/servicedispatcher/commit/f759f897b063757bcc7a50229715035159d79dd5)
 - Bugfix in ShowIbisstoreSummary (caused 2014-11-26)
 - Fix connection leak in DomainTransformerPipe
 - Prevent 'sap.jcoDestination does not exist'
@@ -587,8 +1027,7 @@ Upcoming
 7.0-B1
 ---
 
-[Commits](https://github.com/ibissource/iaf/compare/v6.1...v7.0-B1)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v7.0-B1)](https://travis-ci.org/ibissource/iaf)
+[Commits](https://github.com/frankframework/frankframework/compare/v6.1...v7.0-B1)
 
 - Replace Apache Commons Collections library v3.2 by v3.2.2
 - Don't temporarily move already temporarily moved messages
@@ -751,8 +1190,7 @@ Upcoming
 6.1
 ---
 
-[Commits](https://github.com/ibissource/iaf/compare/v6.0...v6.1)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v6.1)](https://travis-ci.org/ibissource/iaf)
+[Commits](https://github.com/frankframework/frankframework/compare/v6.0...v6.1)
 
 - Equalize/refactor file name determination for FilePipe/Sender (for action "read" also consider attribute fileName and for action "info" also consider attributes fileName and classpath)
 - Add CrlPipe
@@ -823,8 +1261,7 @@ Upcoming
 6.0
 ---
 
-[Commits](https://github.com/ibissource/iaf/compare/v5.6.1...v6.0)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v6.0)](https://travis-ci.org/ibissource/iaf)
+[Commits](https://github.com/frankframework/frankframework/compare/v5.6.1...v6.0)
 
 - Add support for jetty-maven-plugin
 - Add note "Theme Bootstrap is part of a beta version" in main page of IBIS console for theme "bootstrap"
@@ -1013,8 +1450,7 @@ Upcoming
 5.6.1
 ---
 
-[Commits](https://github.com/ibissource/iaf/compare/v5.6...v5.6.1)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v5.6.1)](https://travis-ci.org/ibissource/iaf)
+[Commits](https://github.com/frankframework/frankframework/compare/v5.6...v5.6.1)
 
 - Fixed bug in EsbSoapWrapper where Result element was inserted instead of Status element 
 
@@ -1023,8 +1459,7 @@ Upcoming
 5.6
 ---
 
-[Commits](https://github.com/ibissource/iaf/compare/v5.5...v5.6)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v5.6)](https://travis-ci.org/ibissource/iaf)
+[Commits](https://github.com/frankframework/frankframework/compare/v5.5...v5.6)
 
 - Move missing errorStorage warning from MessageKeeper (at adapter level) and logfile to ConfigurationWarnings (top of console main page).
 - Replace (broken) enforceMQCompliancy on JmsSender with MQSender.
@@ -1051,8 +1486,7 @@ Upcoming
 5.5
 ---
 
-[Commits](https://github.com/ibissource/iaf/compare/v5.4...v5.5)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v5.5)](https://travis-ci.org/ibissource/iaf)
+[Commits](https://github.com/frankframework/frankframework/compare/v5.4...v5.5)
 
 - Also when not transacted don't retrow exception caught in JMS listener (caused connection to be closed and caused possible other threads on the same listener to experience "javax.jms.IllegalStateException: Consumer closed").
 - Tweaked error logging and configuration warnings about transactional processing.
@@ -1083,8 +1517,7 @@ Upcoming
 5.4
 ---
 
-[Commits](https://github.com/ibissource/iaf/compare/v5_3...v5_4)
-[![Build Status](https://travis-ci.org/ibissource/iaf.png?branch=v5.4)](https://travis-ci.org/ibissource/iaf)
+[Commits](https://github.com/frankframework/frankframework/compare/v5_3...v5_4)
 
 - First steps towards running IBISes on TIBCO AMX (as WebApp in Composite)
 - added "Used SapSystems" to console function "Show Security Items"
@@ -1104,7 +1537,7 @@ Upcoming
 5.3
 ---
 
-[Commits](https://github.com/ibissource/iaf/compare/v5_2...v5_3)
+[Commits](https://github.com/frankframework/frankframework/compare/v5_2...v5_3)
 
 - Better DB2 support.
 - Some steps towards making a release with Maven.

@@ -1,0 +1,41 @@
+<configuration>
+	  <adapter name="FullAdapter">
+      <receiver name="testtool-FullAdapter"
+      			transactionAttribute="Required">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-FullAdapter"/>
+         <messageLog className="org.frankframework.jdbc.JdbcTransactionalStorage"
+                     jmsRealm="jdbc"
+                     slotId="stubbed-FullAdapter"
+                     retention="7"/>
+      </receiver>
+		<!--<receiver name="FullAdapter" transactionAttribute="Required">
+			      <listener name="FullAdapter"
+                   className="org.frankframework.jms.JmsListener"
+                   lookupDestination="false"/>
+			      <messageLog className="org.frankframework.jdbc.JdbcTransactionalStorage"
+                     jmsRealm="jdbc"
+                     slotId="FullAdapter"
+                     retention="7"/>
+		    </receiver>--><receiver name="testtool-FullAdapter-1"
+		    	transactionAttribute="Required">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-FullAdapter-1"/>
+         <messageLog className="org.frankframework.jdbc.JdbcTransactionalStorage"
+                     jmsRealm="jdbc"
+                     slotId="stubbed-FullAdapter"
+                     retention="7"/>
+      </receiver>
+		    <pipeline>
+			      <exits>
+				        <exit path="EXIT" state="success"/>
+			      </exits>
+
+			      <pipe name="CreateResponse"
+               className="org.frankframework.pipes.EchoPipe"
+			   inputFromFixedValue="Success ">
+				        <forward name="success" path="EXIT"/>
+			      </pipe>
+		    </pipeline>
+	  </adapter>
+</configuration>

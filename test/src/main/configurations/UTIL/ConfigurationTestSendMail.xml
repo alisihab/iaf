@@ -1,0 +1,46 @@
+<module>
+	<adapter name="TestSendMail" active="${testsendmail.adapter.active}">
+		<receiver>
+			<listener
+				name="TestSendMail"
+				className="org.frankframework.receivers.JavaListener"
+			/>
+		</receiver>
+		<receiver>
+			<listener
+				name="TestSendMail"
+				className="org.frankframework.http.RestListener"
+				uriPattern="TestSendMail"
+				method="GET"
+			/>
+		</receiver>
+		<pipeline firstPipe="CreateMail">
+
+			<pipe
+				name="CreateMail"
+				className="org.frankframework.pipes.XsltPipe"
+				styleSheetName="/Larva/xsl/CreateMail.xsl"
+				getInputFromFixedValue="&lt;dummy/&gt;"
+				>
+				<param name="hostname" value="${hostname}" />
+				<param name="message" sessionKey="originalMessage" />
+				<param name="mailaddresses" value="${errorreport.mailaddresses.fail}" />
+				<param name="result" value="testmail" />
+				<forward name="success" path="SendMail" />
+			</pipe>
+			<pipe
+				name="SendMail"
+				className="org.frankframework.pipes.SenderPipe"
+				>
+				<sender
+					className="org.frankframework.senders.MailSender"
+					smtpHost="${smtp.host}"
+				/>
+				<forward name="success" path="EXIT" />
+			</pipe>
+			<exits>
+				<exit path="EXIT" state="success" />
+			</exits>
+		</pipeline>
+	</adapter>
+</module>

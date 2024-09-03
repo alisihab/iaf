@@ -1,0 +1,17 @@
+<configuration>
+	<adapter name="GetPrincipalPipe">
+		<receiver>
+			<listener className="org.frankframework.receivers.JavaListener" name="GetPrincipalPipe" />
+		</receiver>
+		<pipeline firstPipe="GetPrincipalPipe">
+			<exits>
+				<exit path="EXIT" state="success" />
+			</exits>
+			<pipe
+				name="GetPrincipalPipe"
+				className="org.frankframework.pipes.GetPrincipalPipe">
+				<forward name="success" path="EXIT" />
+			</pipe>
+		</pipeline>
+	</adapter>
+</configuration>

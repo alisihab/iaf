@@ -1,0 +1,30 @@
+<configuration>
+	  <adapter name="DirectQuerySender">
+      <receiver name="testtool-DirectQuerySender">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-DirectQuerySender"/>
+      </receiver>
+		    <receiver name="DirectQuerySender">
+			      <listener className="org.frankframework.receivers.JavaListener"
+                   name="DirectQuerySender"/>
+		    </receiver>
+      <receiver name="testtool-DirectQuerySender-1">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-DirectQuerySender-1"/>
+      </receiver>
+
+		    <pipeline>
+			      <exits>
+				        <exit path="READY" state="success"/>
+			      </exits>
+			      <pipe name="Call Sender"
+               className="org.frankframework.pipes.SenderPipe"
+               timeoutOnResult="[timeout]"
+               exceptionOnResult="[error]">
+				        <sender className="org.frankframework.jdbc.DirectQuerySender"
+                    queryType="select"/>
+				        <forward name="success" path="READY"/>
+			      </pipe>
+		    </pipeline>
+	  </adapter>
+</configuration>

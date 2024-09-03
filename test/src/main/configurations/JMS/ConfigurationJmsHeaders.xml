@@ -1,13 +1,10 @@
 <module>
 	<adapter name="read message of queue" active="${active.tibco}">
-		<receiver
-			name="test_esb_receiver"
-			className="nl.nn.adapterframework.receivers.GenericReceiver"
-			>
+		<receiver>
 			<listener
 				name="test_esb_listener"
-				className="nl.nn.adapterframework.extensions.esb.EsbJmsListener"
-				destinationName="jms/GetMessageRequest"
+				className="org.frankframework.extensions.esb.EsbJmsListener"
+				destinationName="${tibco.rr_queue}"
 				jmsRealm="qcf_tibco_esb_rr"
 				messageProtocol="RR"
 				messageSelector="SOURCE='${hostname}_jmsHeaderTest'"
@@ -26,7 +23,7 @@
 
 			<pipe name="SendMessage"
 				getInputFromFixedValue="Yaay I'm working!!!"
-				className="nl.nn.adapterframework.pipes.EchoPipe"
+				className="org.frankframework.pipes.EchoPipe"
 				storeResultInSessionKey="mySessKey"
 				preserveInput="true"
 			>
@@ -35,14 +32,11 @@
 		</pipeline>
 	</adapter>
 	<adapter name="put message on queue" active="${active.tibco}">
-		<receiver
-			name="Put On"
-			className="nl.nn.adapterframework.receivers.GenericReceiver"
-			>
+		<receiver>
 			<listener
 				name="Queue"
-				className="nl.nn.adapterframework.receivers.JavaListener"
-				serviceName="ibis4test-EsbJmsRRHeaderSender" 
+				className="org.frankframework.receivers.JavaListener"
+				serviceName="ibis4test-EsbJmsRRHeaderSender"
 			/>
 		</receiver>
 
@@ -52,11 +46,11 @@
 			</exits>
 
 			<pipe name="SendMessage"
-				className="nl.nn.adapterframework.pipes.GenericMessageSendingPipe"
+				className="org.frankframework.pipes.SenderPipe"
 				>
 				<sender
-					className="nl.nn.adapterframework.extensions.esb.EsbJmsSender"
-					destinationName="jms/GetMessageRequest"
+					className="org.frankframework.extensions.esb.EsbJmsSender"
+					destinationName="${tibco.rr_queue}"
 					jmsRealm="qcf_tibco_esb_rr"
 					messageProtocol="RR"
 					responseHeadersToSessionKeys="value,sessionkey,sessionkeyWithValue,sessionkeyWithSessionKey"
@@ -65,7 +59,7 @@
 				<forward name="success" path="makeReply"/>
 			</pipe>
 
-			<pipe name="makeReply" className="nl.nn.adapterframework.pipes.XsltPipe"
+			<pipe name="makeReply" className="org.frankframework.pipes.XsltPipe"
 				styleSheetName="JmsHeader/xsl/consolidateSessionKeys.xsl"
 				>
 				<param name="value" sessionKey="value" />

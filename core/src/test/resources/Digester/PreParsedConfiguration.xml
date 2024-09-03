@@ -1,0 +1,17 @@
+<Configuration
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://schemas.frankframework.org/ibisdoc.xsd"
+	name="My first beautiful configuration"
+	>
+	<Adapter name="HelloBeautifulWorld">
+		<Receiver name="HelloBeautifulWorld">
+			<JavaListener name="HelloBeautifulWorld" />
+		</Receiver>
+		<Pipeline firstPipe="HelloBeautifulWorld">
+			<Exit path="EXIT" state="success"/>
+			<EchoPipe name="HelloBeautifulWorld" getInputFromFixedValue="Hello Beautiful World" >
+				<Forward name="success" path="EXIT"/>
+			</EchoPipe>
+		</Pipeline>
+	</Adapter>
+</Configuration>

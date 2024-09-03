@@ -2,7 +2,7 @@
 <beans
 	xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans classpath:xml/xsd/spring-beans-3.2.xsd"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
 	>
 
 	<import resource="springIbisTestTool.xml"/>
@@ -11,12 +11,11 @@
 		<constructor-arg value="Ibis Test Tool Tibet 2"/>
 	</bean>
 
-	<bean name="debugger,ibisDebugger" class="nl.nn.ibistesttool.tibet2.Debugger" autowire="byName"/>
+	<bean name="debugger,ibisDebugger" class="org.frankframework.ibistesttool.tibet2.Debugger" autowire="byName"/>
 
 	<bean name="metadataExtractor" class="nl.nn.testtool.MetadataExtractor">
 		<property name="extraMetadataFieldExtractors">
 			<list>
-				<bean class="nl.nn.ibistesttool.metadata.StatusExtractor"/>
 				<bean class="nl.nn.testtool.metadata.XpathMetadataFieldExtractor">
 					<property name="name" value="conversationId"/>
 					<property name="label" value="Conversation Id"/>
@@ -71,7 +70,7 @@
 		</property>
 	</bean>
 
-	<bean name="oldSchoolView" class="nl.nn.testtool.filter.View" parent="whiteBoxView">
+	<bean name="oldSchoolView" parent="whiteBoxView" autowire="byName">
 		<property name="name" value="Old school"/>
 		<property name="metadataNames">
 			<list>
@@ -100,7 +99,13 @@
 		</property>
 	</bean>
 
-	<bean name="auditLogStorage" class="nl.nn.ibistesttool.tibet2.Storage" autowire="byName" init-method="init">
+	<bean id="jndiContextPrefixFactory" class="org.frankframework.core.JndiContextPrefixFactory"/>
+
+	<bean id="dataSourceFactory" class="org.frankframework.jdbc.datasource.DataSourceFactory" autowire="byType"/>
+
+	<bean name="dbmsSupportFactory" class="org.frankframework.dbms.DbmsSupportFactory"/>
+
+	<bean name="auditLogStorage" class="org.frankframework.ibistesttool.tibet2.Storage" autowire="byName">
 		<property name="name" value="Logging"/>
 		<property name="datasourceName" value="jdbc/${instance.name.lc}"/>
 		<property name="table" value="AUDITLOG"/>
@@ -175,9 +180,9 @@
 		</property>
 	</bean>
 
-	<bean name="auditLogView" class="nl.nn.ibistesttool.filter.TibetView" scope="prototype">
+	<bean name="auditLogView" class="org.frankframework.ibistesttool.filter.TibetView" scope="prototype">
 		<property name="name" value="Audit log"/>
-		<property name="storage">
+		<property name="debugStorage">
 			<ref bean="auditLogStorage"/>
 		</property>
 		<property name="metadataNames">
@@ -196,12 +201,12 @@
 				<value>FUNCT_ERROR_TEXT</value>
 			</list>
 		</property>
-		<property name="ibisManager">
-			<ref bean="ibisManager"/>
+		<property name="ibisDebugger">
+			<ref bean="ibisDebugger"/>
 		</property>
 	</bean>
 
-	<bean name="exceptionLogStorage" class="nl.nn.ibistesttool.tibet2.Storage" autowire="byName" init-method="init">
+	<bean name="exceptionLogStorage" class="org.frankframework.ibistesttool.tibet2.Storage" autowire="byName">
 		<property name="name" value="Logging"/>
 		<property name="datasourceName" value="jdbc/${instance.name.lc}"/>
 		<property name="table" value="EXCEPTIONLOG"/>
@@ -273,9 +278,9 @@
 		</property>
 	</bean>
 
-	<bean name="exceptionLogView" class="nl.nn.ibistesttool.filter.TibetView" scope="prototype">
+	<bean name="exceptionLogView" class="org.frankframework.ibistesttool.filter.TibetView" scope="prototype">
 		<property name="name" value="Exception log"/>
-		<property name="storage">
+		<property name="debugStorage">
 			<ref bean="exceptionLogStorage"/>
 		</property>
 		<property name="metadataNames">
@@ -293,8 +298,8 @@
 				<value>ERROR_TEXT</value>
 			</list>
 		</property>
-		<property name="ibisManager">
-			<ref bean="ibisManager"/>
+		<property name="ibisDebugger">
+			<ref bean="ibisDebugger"/>
 		</property>
 	</bean>
 

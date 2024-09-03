@@ -1,0 +1,30 @@
+<configuration>
+	<adapter name="ListenerInPipe">
+		<receiver name="ListenerInPipe">
+			<listener
+				className="org.frankframework.receivers.JavaListener"
+				name="SenderPipe"
+			/>
+		</receiver>
+
+		<pipeline>
+			<exits>
+				<exit path="READY" state="success"/>
+			</exits>
+			<pipe
+				name="Call Sender"
+				className="org.frankframework.pipes.SenderPipe"
+				>
+				<sender
+					className="org.frankframework.senders.IbisLocalSender"
+					javaListener="TEST"
+				/>
+				<listener
+					className="org.frankframework.receivers.JavaListener"
+					name="SenderListener"
+				/>
+				<forward name="success" path="READY"/>
+			</pipe>
+		</pipeline>
+	</adapter>
+</configuration>

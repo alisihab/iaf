@@ -1,0 +1,19 @@
+<configuration name="SimpleConfiguration">
+	<adapter name="HelloBeautifulWorld">
+		<receiver name="testtool-HelloBeautifulWorld">
+			<listener className="org.frankframework.receivers.JavaListener" serviceName="testtool-HelloBeautifulWorld"/>
+		</receiver>
+		<receiver name="HelloBeautifulWorld">
+			<listener name="HelloBeautifulWorld" className="org.frankframework.receivers.JavaListener"/>
+		</receiver>
+		<receiver name="testtool-HelloBeautifulWorld-1">
+			<listener className="org.frankframework.receivers.JavaListener" serviceName="testtool-HelloBeautifulWorld-1"/>
+		</receiver>
+		<pipeline firstPipe="HelloBeautifulWorld">
+			<exit name="EXIT" state="success"/>
+			<pipe name="HelloBeautifulWorld" getInputFromFixedValue="Hello Beautiful World ${digester.property} [${secret}] &lt;@quot;&gt;" className="org.frankframework.pipes.EchoPipe">
+				<forward name="success" path="EXIT"/>
+			</pipe>
+		</pipeline>
+	</adapter>
+</configuration>

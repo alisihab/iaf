@@ -1,0 +1,30 @@
+<configuration>
+	  <adapter name="XmlQuerySender">
+      <receiver name="testtool-XmlQuerySender">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-XmlQuerySender"/>
+      </receiver>
+		    <receiver name="XmlQuerySender">
+			      <listener className="org.frankframework.receivers.JavaListener"
+                   name="XmlQuerySender"/>
+		    </receiver>
+      <receiver name="testtool-XmlQuerySender-1">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-XmlQuerySender-1"/>
+      </receiver>
+
+		    <pipeline>
+			      <exits>
+				        <exit path="READY" state="success"/>
+			      </exits>
+			      <pipe name="Call Sender"
+               className="org.frankframework.pipes.SenderPipe"
+               timeoutOnResult="[timeout]"
+               exceptionOnResult="[error]">
+				        <sender className="org.frankframework.jdbc.XmlQuerySender"
+                    queryType="select"/>
+				        <forward name="success" path="READY"/>
+			      </pipe>
+		    </pipeline>
+	  </adapter>
+</configuration>

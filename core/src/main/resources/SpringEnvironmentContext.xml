@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:integration="http://www.springframework.org/schema/integration"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-5.2.xsd
+		"
+	>
+<!-- 	<integration:control-bus dispatcher-pool-size="25" auto-create-channels="true"/> -->
+	<integration:publish-subscribe-channel id="frank-management-bus" />
+
+	<context:property-placeholder />
+
+	<context:component-scan base-package="org.frankframework">
+		<context:include-filter type="annotation" expression="org.frankframework.lifecycle.IbisInitializer"/>
+
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+
+		<!-- Ignore all Spring annotations from the Ladybug module, they should be wired in their own context -->
+		<context:exclude-filter type="regex" expression="org\.frankframework\.ibistesttool\..*"/>
+		<context:exclude-filter type="regex" expression="org\.frankframework\.web\..*"/>
+		<context:exclude-filter type="regex" expression="org\.frankframework\.console\..*"/>
+	</context:component-scan>
+
+	<bean id="cxf" class="org.frankframework.http.cxf.SpringSoapBus">
+		<property name="id" value="ff-soap-bus"/>
+	</bean>
+
+	<bean id="NoopSecurityFilterChain" class="org.frankframework.lifecycle.servlets.NoopSecurityFilterChain" />
+
+	<bean id="inboundGatewayFactory" class="org.frankframework.management.bus.InboundGatewayFactory">
+		<property name="gatewayClassnames" value="${management.gateway.inbound.class}" />
+	</bean>
+
+	<bean id="org.apache.cxf.bus.spring.BusWiringBeanFactoryPostProcessor" class="org.apache.cxf.bus.spring.BusWiringBeanFactoryPostProcessor"/>
+	<bean id="org.apache.cxf.bus.spring.Jsr250BeanPostProcessor" class="org.apache.cxf.bus.spring.Jsr250BeanPostProcessor"/>
+	<bean id="org.apache.cxf.bus.spring.BusExtensionPostProcessor" class="org.apache.cxf.bus.spring.BusExtensionPostProcessor"/>
+
+	<!-- Beans that should be loaded before the IbisContext starts -->
+	<bean id="servletManager" scope="singleton" class="org.frankframework.lifecycle.ServletManager" autowire="byName" />
+	<bean id="ServletRegisteringPostProcessor" class="org.frankframework.lifecycle.ServletRegisteringPostProcessor"/>
+
+	<bean id="MessageEventListener" class="org.frankframework.lifecycle.MessageEventListener" scope="singleton" />
+	<bean name="meterRegistry" class="org.frankframework.metrics.MetricsRegistryFactoryBean" autowire="byName" lazy-init="true" />
+
+</beans>

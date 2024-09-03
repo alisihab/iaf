@@ -1,0 +1,24 @@
+<configuration>
+	  <adapter name="RestListener">
+      <receiver name="testtool-RestListener">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-RestListener"/>
+         <messageLog className="org.frankframework.jdbc.JdbcTransactionalStorage"
+                     slotId="stubbed-ApiListenerDuplicateCheck"/>
+      </receiver>
+		    <receiver>
+			      <listener name="RestListener"
+                   className="org.frankframework.http.RestListener"
+                   method="post"
+                   uriPattern="insert"/>
+			      <messageLog className="org.frankframework.jdbc.JdbcTransactionalStorage"
+                     slotId="ApiListenerDuplicateCheck"/>
+		    </receiver>
+      <receiver name="testtool-RestListener-1">
+         <listener className="org.frankframework.receivers.JavaListener"
+                   serviceName="testtool-RestListener-1"/>
+         <messageLog className="org.frankframework.jdbc.JdbcTransactionalStorage"
+                     slotId="stubbed-ApiListenerDuplicateCheck"/>
+      </receiver>
+	  </adapter>
+</configuration>

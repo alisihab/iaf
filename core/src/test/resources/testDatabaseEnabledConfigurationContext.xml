@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Beans defined in this file are unique for every configuration. If you want
+	to reuse a bean over multiple configurations, add it to the SpringApplicationContext.xml
+	Singleton beans are managed by Spring and will be closed upon configuration unload.
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	default-autowire="byName"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	">
+
+	<context:property-placeholder />
+
+	<bean name="AppConstantsPropertySource" class="org.frankframework.testutil.AppConstantsPropertySource" />
+
+	<import resource="testConfigurationContext.xml"/>
+
+	<bean id="jndiContextPrefixFactory" class="org.frankframework.core.JndiContextPrefixFactory" />
+	<bean id="dataSourceFactory" class="${TestDataSourceFactory}" autowire="byType"/>
+	<bean name="dbmsSupportFactory" class="org.frankframework.dbms.DbmsSupportFactory" />
+
+	<bean
+		id="txManagerProxy"
+		class="org.frankframework.jta.SpringTxManagerProxy"
+		>
+		<property name="realTxManager">
+			<ref bean="txManagerReal"/>
+		</property>
+	</bean>
+
+	<alias name="txManagerProxy" alias="txManager"/>
+
+	<bean
+		id="defaultDataSource"
+		factory-bean="dataSourceFactory"
+		factory-method="getDataSource"
+		>
+		<constructor-arg value="${DataSourceName}" />
+	</bean>
+</beans>

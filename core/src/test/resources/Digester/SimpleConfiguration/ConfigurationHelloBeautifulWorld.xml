@@ -1,0 +1,23 @@
+<root
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://schemas.frankframework.org/frankdoc.xsd"
+	>
+	<Adapter name="HelloBeautifulWorld" active="${HelloBeautifulWorld.active}">
+		<Receiver
+			name="HelloBeautifulWorld"
+			>
+			<JavaListener
+				name="HelloBeautifulWorld"
+			/>
+		</Receiver>
+		<Pipeline firstPipe="HelloBeautifulWorld">
+			<!-- First test config to use name attribute instead of path attribute for Exit. Keep path attribute in other configs for now so backports to 7.7 for issues that need it are easier -->
+			<Exit name="EXIT" state="success"/>
+			<EchoPipe
+				name="HelloBeautifulWorld"
+				getInputFromFixedValue="Hello Beautiful World ${digester.property} [${secret}] &lt;@quot;&gt;">
+				<Forward name="success" path="EXIT"/>
+			</EchoPipe>
+		</Pipeline>
+	</Adapter>
+</root>

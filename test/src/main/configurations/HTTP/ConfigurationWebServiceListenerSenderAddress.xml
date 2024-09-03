@@ -1,143 +1,141 @@
 <module>
-    <!-- serviceNamespaceURI listeners -->
-	<adapter name="WebServiceListenerAddress" 
+	<!-- WebServiceListeners with address -->
+	<adapter name="WebServiceListenerAddress"
 		description="Test the functioning of the WebServiceListener with the attribute address">
-		<receiver className="nl.nn.adapterframework.receivers.GenericReceiver"
-			name="WebServiceListenerAddress">
-			<listener className="nl.nn.adapterframework.http.WebServiceListener"
+		<receiver>
+			<listener className="org.frankframework.http.WebServiceListener"
 				address="urn/ws/address" />
 		</receiver>
 		<pipeline firstPipe="EchoPipe">
 			<exits>
 				<exit path="EXIT" state="success" />
 			</exits>
-			<pipe name="EchoPipe" className="nl.nn.adapterframework.pipes.EchoPipe">
+			<pipe name="EchoPipe" className="org.frankframework.pipes.EchoPipe">
 				<forward name="success" path="EXIT" />
 			</pipe>
 		</pipeline>
 	</adapter>
 	<adapter name="WebServiceListenerErrorAddress"
 		description="Test the functioning of the WebServiceListener with the attribute address (error)">
-		<receiver className="nl.nn.adapterframework.receivers.GenericReceiver"
-			name="WebServiceListenerErrorAddress">
-			<listener className="nl.nn.adapterframework.http.WebServiceListener"
+		<receiver>
+			<listener className="org.frankframework.http.WebServiceListener"
 				address="urn/ws_error/address" />
 		</receiver>
 		<pipeline firstPipe="ExceptionPipe">
 			<exits>
 				<exit path="EXIT" state="success" />
 			</exits>
-			<pipe name="ExceptionPipe" className="nl.nn.adapterframework.pipes.ExceptionPipe">
+			<pipe name="ExceptionPipe" className="org.frankframework.pipes.ExceptionPipe">
 				<forward name="success" path="EXIT" />
 			</pipe>
 		</pipeline>
 	</adapter>
 	<adapter name="WebServiceListenerTimeoutAddress"
 		description="Test the functioning of the WebServiceListener with the attribute Address (timeout)">
-		<receiver className="nl.nn.adapterframework.receivers.GenericReceiver"
-			name="WebServiceListenerTimeoutAddress">
-			<listener className="nl.nn.adapterframework.http.WebServiceListener"
+		<receiver>
+			<listener className="org.frankframework.http.WebServiceListener"
 				address="urn/ws_timeout/address" />
 		</receiver>
 		<pipeline firstPipe="DelayPipe">
 			<exits>
 				<exit path="EXIT" state="success" />
 			</exits>
-			<pipe name="DelayPipe" className="nl.nn.adapterframework.pipes.DelayPipe"
+			<pipe name="DelayPipe" className="org.frankframework.pipes.DelayPipe"
 				delayTime="2000">
 				<forward name="success" path="EXIT" />
 			</pipe>
 		</pipeline>
 	</adapter>
-	
-	<adapter name="WebServiceSenderAddress" 
+
+	<adapter name="WebServiceSenderAddress"
 		description="Test the functioning of the WebServiceSender sending to a listener with address">
-		<receiver className="nl.nn.adapterframework.receivers.GenericReceiver"
-			name="WebServiceSenderAddress">
-			<listener className="nl.nn.adapterframework.receivers.JavaListener"
+		<receiver>
+			<listener className="org.frankframework.receivers.JavaListener"
 				serviceName="ibis4test-WebServiceSenderAddress" />
 		</receiver>
 		<pipeline firstPipe="Send2WS">
 			<exits>
 				<exit path="EXIT" state="success" />
 			</exits>
-			<pipe className="nl.nn.adapterframework.pipes.GenericMessageSendingPipe"
+			<pipe className="org.frankframework.pipes.SenderPipe"
 				name="Send2WS">
-				<sender className="nl.nn.adapterframework.http.WebServiceSender"
+				<sender className="org.frankframework.http.WebServiceSender"
 					url="${web.protocol}://${web.host}:${web.port}${web.contextpath}/services/urn/ws/address"
-					allowSelfSignedCertificates="true" verifyHostname="false" />
+					sharedResourceRef="SharedHttpSession"
+				/>
 				<forward name="success" path="EXIT" />
 			</pipe>
 		</pipeline>
 	</adapter>
 	<adapter name="WebServiceSenderErrorAddress"
 		description="Test the functioning of the WebServiceSender sending to a listener with address (error)">
-		<receiver className="nl.nn.adapterframework.receivers.GenericReceiver"
-			name="WebServiceSenderErrorAddress">
-			<listener className="nl.nn.adapterframework.receivers.JavaListener"
+		<receiver>
+			<listener className="org.frankframework.receivers.JavaListener"
 				serviceName="ibis4test-WebServiceSenderErrorAddress" />
 		</receiver>
 		<pipeline firstPipe="Send2WS">
 			<exits>
 				<exit path="EXIT" state="success" />
 			</exits>
-			<pipe className="nl.nn.adapterframework.pipes.GenericMessageSendingPipe"
+			<pipe className="org.frankframework.pipes.SenderPipe"
 				name="Send2WS">
-				<sender className="nl.nn.adapterframework.http.WebServiceSender"
-					url="${web.protocol}://${web.host}:${web.port}${web.contextpath}/services/urn/ws_error/address" 
-					allowSelfSignedCertificates="true" verifyHostname="false" />
+				<sender className="org.frankframework.http.WebServiceSender"
+					url="${web.protocol}://${web.host}:${web.port}${web.contextpath}/services/urn/ws_error/address"
+					allowSelfSignedCertificates="true"
+					verifyHostname="false"
+					authAlias="${framework.api.user.alias}"
+				/>
 				<forward name="success" path="EXIT" />
 			</pipe>
 		</pipeline>
 	</adapter>
 	<adapter name="WebServiceSenderTimeoutGlobalForwardAddress"
 		description="Test the functioning of the WebServiceSender in combination with global-forward sending to a listener with address">
-		<receiver className="nl.nn.adapterframework.receivers.GenericReceiver"
-			name="WebServiceSenderTimeoutGlobalForwardAddress">
-			<listener className="nl.nn.adapterframework.receivers.JavaListener"
+		<receiver>
+			<listener className="org.frankframework.receivers.JavaListener"
 				serviceName="ibis4test-WebServiceSenderTimeoutGlobalForwardAddress" />
 		</receiver>
 		<pipeline firstPipe="SwitchAction">
 			<exits>
 				<exit path="EXIT" state="success" />
 			</exits>
-			<global-forwards>
-				<forward name="exception" path="error_exception2" />
-			</global-forwards>
-			<pipe name="SwitchAction" className="nl.nn.adapterframework.pipes.XmlSwitch"
+			<GlobalForwards>
+				<Forward name="exception" path="error_exception2" />
+			</GlobalForwards>
+			<pipe name="SwitchAction" className="org.frankframework.pipes.XmlSwitch"
 				xpathExpression="request/@action"></pipe>
 			<!-- send2ws_no_forwards -->
-			<pipe className="nl.nn.adapterframework.pipes.GenericMessageSendingPipe"
+			<pipe className="org.frankframework.pipes.SenderPipe"
 				name="send2ws_no_forwards">
-				<sender className="nl.nn.adapterframework.http.WebServiceSender"
+				<sender className="org.frankframework.http.WebServiceSender"
 					url="${web.protocol}://${web.host}:${web.port}${web.contextpath}/services/urn/ws_timeout/address"
-					timeout="1000" 
-					allowSelfSignedCertificates="true" verifyHostname="false" />
+					sharedResourceRef="SharedHttpSession"
+				/>
 				<forward name="success" path="EXIT" />
 			</pipe>
 			<!-- send2ws_forward_timeout -->
-			<pipe className="nl.nn.adapterframework.pipes.GenericMessageSendingPipe"
+			<pipe className="org.frankframework.pipes.SenderPipe"
 				name="send2ws_forward_timeout">
-				<sender className="nl.nn.adapterframework.http.WebServiceSender"
+				<sender className="org.frankframework.http.WebServiceSender"
 					url="${web.protocol}://${web.host}:${web.port}${web.contextpath}/services/urn/ws_timeout/address"
-					timeout="1000" 
-					allowSelfSignedCertificates="true" verifyHostname="false" />
+					sharedResourceRef="SharedHttpSession"
+				/>
 				<forward name="timeout" path="error_timeout" />
 				<forward name="exception" path="error_exception" />
 				<forward name="success" path="EXIT" />
 			</pipe>
-			<pipe className="nl.nn.adapterframework.pipes.XsltPipe" name="error_timeout"
-				styleSheetName="WebServiceListenerSender/copy.xsl">
+			<pipe className="org.frankframework.pipes.XsltPipe" name="error_timeout"
+                  styleSheetName="WebServiceListenerSender/copy.xsl">
 				<param name="root" value="TIMEOUT" />
 				<forward name="success" path="EXIT" />
 			</pipe>
-			<pipe className="nl.nn.adapterframework.pipes.XsltPipe" name="error_exception"
-				styleSheetName="WebServiceListenerSender/copy.xsl">
+			<pipe className="org.frankframework.pipes.XsltPipe" name="error_exception"
+                  styleSheetName="WebServiceListenerSender/copy.xsl">
 				<param name="root" value="EXCEPTION" />
 				<forward name="success" path="EXIT" />
 			</pipe>
-			<pipe className="nl.nn.adapterframework.pipes.XsltPipe" name="error_exception2"
-				styleSheetName="WebServiceListenerSender/copy.xsl">
+			<pipe className="org.frankframework.pipes.XsltPipe" name="error_exception2"
+                  styleSheetName="WebServiceListenerSender/copy.xsl">
 				<param name="root" value="EXCEPTION2" />
 				<forward name="success" path="EXIT" />
 			</pipe>
@@ -145,118 +143,168 @@
 	</adapter>
 	<adapter name="WebServiceSenderTimeoutAddress"
 		description="Test the functioning of the WebServiceSender sending to a listener with address (timeout)">
-		<receiver className="nl.nn.adapterframework.receivers.GenericReceiver"
-			name="WebServiceSenderTimeoutAddress">
-			<listener className="nl.nn.adapterframework.receivers.JavaListener"
+		<receiver>
+			<listener className="org.frankframework.receivers.JavaListener"
 				serviceName="ibis4test-WebServiceSenderTimeoutAddress" />
 		</receiver>
 		<pipeline firstPipe="SwitchAction">
 			<exits>
 				<exit path="EXIT" state="success" />
 			</exits>
-			<pipe name="SwitchAction" className="nl.nn.adapterframework.pipes.XmlSwitch"
+			<pipe name="SwitchAction" className="org.frankframework.pipes.XmlSwitch"
 				xpathExpression="request/@action"></pipe>
 			<!-- send2ws_no_forwards -->
-			<pipe className="nl.nn.adapterframework.pipes.GenericMessageSendingPipe"
+			<pipe className="org.frankframework.pipes.SenderPipe"
 				name="send2ws_no_forwards">
-				<sender className="nl.nn.adapterframework.http.WebServiceSender"
+				<sender className="org.frankframework.http.WebServiceSender"
 					url="${web.protocol}://${web.host}:${web.port}${web.contextpath}/services/urn/ws_timeout/address"
-					timeout="1000" 
-					allowSelfSignedCertificates="true" verifyHostname="false"/>
+					sharedResourceRef="SharedHttpSession"
+				/>
 				<forward name="success" path="EXIT" />
 			</pipe>
 			<!-- send2ws_forward_timeout -->
-			<pipe className="nl.nn.adapterframework.pipes.GenericMessageSendingPipe"
+			<pipe className="org.frankframework.pipes.SenderPipe"
 				name="send2ws_forward_timeout">
-				<sender className="nl.nn.adapterframework.http.WebServiceSender"
+				<sender className="org.frankframework.http.WebServiceSender"
 					url="${web.protocol}://${web.host}:${web.port}${web.contextpath}/services/urn/ws_timeout/address"
-					timeout="1000" 
-					allowSelfSignedCertificates="true" verifyHostname="false" />
+					sharedResourceRef="SharedHttpSession"
+				/>
 				<forward name="timeout" path="error_timeout" />
 				<forward name="success" path="EXIT" />
 			</pipe>
 			<!-- send2ws_forward_exception -->
-			<pipe className="nl.nn.adapterframework.pipes.GenericMessageSendingPipe"
+			<pipe className="org.frankframework.pipes.SenderPipe"
 				name="send2ws_forward_exception">
-				<sender className="nl.nn.adapterframework.http.WebServiceSender"
+				<sender className="org.frankframework.http.WebServiceSender"
 					url="${web.protocol}://${web.host}:${web.port}${web.contextpath}/services/urn/ws_timeout/address"
-					timeout="1000"
-					allowSelfSignedCertificates="true" verifyHostname="false"  />
+					sharedResourceRef="SharedHttpSession"
+				/>
 				<forward name="exception" path="error_exception" />
 				<forward name="success" path="EXIT" />
 			</pipe>
 			<!-- send2ws_with_forwards -->
-			<pipe className="nl.nn.adapterframework.pipes.GenericMessageSendingPipe"
+			<pipe className="org.frankframework.pipes.SenderPipe"
 				name="send2ws_with_forwards">
-				<sender className="nl.nn.adapterframework.http.WebServiceSender"
+				<sender className="org.frankframework.http.WebServiceSender"
 					url="${web.protocol}://${web.host}:${web.port}${web.contextpath}/services/urn/ws_timeout/address"
-					timeout="1000" 
-					allowSelfSignedCertificates="true" verifyHostname="false" />
+					sharedResourceRef="SharedHttpSession"
+				/>
 				<forward name="timeout" path="error_timeout" />
 				<forward name="exception" path="error_exception" />
 				<forward name="success" path="EXIT" />
 			</pipe>
 			<!-- send2ws_multiple_with_forwards -->
-			<pipe className="nl.nn.adapterframework.pipes.ForEachChildElementPipe"
+			<pipe className="org.frankframework.pipes.ForEachChildElementPipe"
 				name="send2ws_multiple_with_forwards" removeXmlDeclarationInResults="true">
-				<sender className="nl.nn.adapterframework.http.WebServiceSender"
+				<sender className="org.frankframework.http.WebServiceSender"
 					url="${web.protocol}://${web.host}:${web.port}${web.contextpath}/services/urn/ws_timeout/address"
-					timeout="1000" 
-					allowSelfSignedCertificates="true" verifyHostname="false" />
+					sharedResourceRef="SharedHttpSession"
+				/>
 				<forward name="timeout" path="error_timeout" />
 				<forward name="exception" path="error_exception" />
 				<forward name="success" path="EXIT" />
 			</pipe>
 			<!-- send2ws_no_forwards_resultOnTimeOut -->
-			<pipe className="nl.nn.adapterframework.pipes.GenericMessageSendingPipe"
+			<pipe className="org.frankframework.pipes.SenderPipe"
 				name="send2ws_no_forwards_resultOnTimeOut" resultOnTimeOut="&lt;receiver_timed_out/&gt;">
-				<sender className="nl.nn.adapterframework.http.WebServiceSender"
+				<sender className="org.frankframework.http.WebServiceSender"
 					url="${web.protocol}://${web.host}:${web.port}${web.contextpath}/services/urn/ws_timeout/address"
-					timeout="1000" 
-					allowSelfSignedCertificates="true" verifyHostname="false" />
+					sharedResourceRef="SharedHttpSession"
+				/>
 				<forward name="success" path="EXIT" />
 			</pipe>
 			<!-- send2ws_forward_timeout_resultOnTimeOut -->
-			<pipe className="nl.nn.adapterframework.pipes.GenericMessageSendingPipe"
+			<pipe className="org.frankframework.pipes.SenderPipe"
 				name="send2ws_forward_timeout_resultOnTimeOut" resultOnTimeOut="&lt;receiver_timed_out/&gt;">
-				<sender className="nl.nn.adapterframework.http.WebServiceSender"
+				<sender className="org.frankframework.http.WebServiceSender"
 					url="${web.protocol}://${web.host}:${web.port}${web.contextpath}/services/urn/ws_timeout/address"
-					timeout="1000" 
-					allowSelfSignedCertificates="true" verifyHostname="false" />
+					sharedResourceRef="SharedHttpSession"
+				/>
 				<forward name="timeout" path="error_timeout" />
 				<forward name="success" path="EXIT" />
 			</pipe>
 			<!-- send2ws_forward_exception_resultOnTimeOut -->
-			<pipe className="nl.nn.adapterframework.pipes.GenericMessageSendingPipe"
+			<pipe className="org.frankframework.pipes.SenderPipe"
 				name="send2ws_forward_exception_resultOnTimeOut" resultOnTimeOut="&lt;receiver_timed_out/&gt;">
-				<sender className="nl.nn.adapterframework.http.WebServiceSender"
+				<sender className="org.frankframework.http.WebServiceSender"
 					url="${web.protocol}://${web.host}:${web.port}${web.contextpath}/services/urn/ws_timeout/address"
-					timeout="1000" 
-					allowSelfSignedCertificates="true" verifyHostname="false" />
+					sharedResourceRef="SharedHttpSession"
+				/>
 				<forward name="exception" path="error_exception" />
 				<forward name="success" path="EXIT" />
 			</pipe>
 			<!-- send2ws_with_forwards_resultOnTimeOut -->
-			<pipe className="nl.nn.adapterframework.pipes.GenericMessageSendingPipe"
+			<pipe className="org.frankframework.pipes.SenderPipe"
 				name="send2ws_with_forwards_resultOnTimeOut" resultOnTimeOut="&lt;receiver_timed_out/&gt;">
-				<sender className="nl.nn.adapterframework.http.WebServiceSender"
+				<sender className="org.frankframework.http.WebServiceSender"
 					url="${web.protocol}://${web.host}:${web.port}${web.contextpath}/services/urn/ws_timeout/address"
-					timeout="1000" 
-					allowSelfSignedCertificates="true" verifyHostname="false" />
+					sharedResourceRef="SharedHttpSession"
+				/>
 				<forward name="timeout" path="error_timeout" />
 				<forward name="exception" path="error_exception" />
 				<forward name="success" path="EXIT" />
 			</pipe>
-			<pipe className="nl.nn.adapterframework.pipes.XsltPipe" name="error_timeout"
-				styleSheetName="WebServiceListenerSender/copy.xsl">
+			<pipe className="org.frankframework.pipes.XsltPipe" name="error_timeout"
+                  styleSheetName="WebServiceListenerSender/copy.xsl">
 				<param name="root" value="TIMEOUT" />
 				<forward name="success" path="EXIT" />
 			</pipe>
-			<pipe className="nl.nn.adapterframework.pipes.XsltPipe" name="error_exception"
-				styleSheetName="WebServiceListenerSender/copy.xsl">
+			<pipe className="org.frankframework.pipes.XsltPipe" name="error_exception"
+                  styleSheetName="WebServiceListenerSender/copy.xsl">
 				<param name="root" value="EXCEPTION" />
 				<forward name="success" path="EXIT" />
 			</pipe>
 		</pipeline>
 	</adapter>
+
+	<adapter name="WebServiceListenerAddressMultipartAttachmentOuter">
+		<receiver>
+			<listener name="getDocumentWithAttachmentOuter"
+				className="org.frankframework.receivers.JavaListener"
+				serviceName="ibis4test-WebServiceListenerAddressMultipartAttachmentOuter"/>
+		</receiver>
+		<pipeline>
+			<exits>
+				<exit path="READY" state="success"/>
+			</exits>
+			<pipe name="send" >
+				<WebServiceSender url="${web.protocol}://${web.host}:${web.port}${web.contextpath}/services/getDocumentWithAttachment" soap="false"/>
+			</pipe>
+			<pipe name="showPart" className="org.frankframework.pipes.EchoPipe"
+				getInputFromSessionKey="multipart1">
+				<forward name="success" path="READY"/>
+			</pipe>
+		</pipeline>
+	</adapter>
+	<adapter name="WebServiceListenerAddressMultipartAttachmentInner">
+		<receiver>
+			<listener name="getDocumentWithAttachmentInner"
+				className="org.frankframework.http.WebServiceListener"
+				address="getDocumentWithAttachment"
+				mtomEnabled="true" />
+		</receiver>
+
+		<pipeline>
+			<exits>
+				<exit path="READY" state="success"/>
+			</exits>
+
+			<pipe name="call getUnifiedDocument" className="org.frankframework.pipes.PutInSession"
+				value="fakeFileContents" sessionKey="FileContent" />
+
+			<pipe name="base64tostream2" className="org.frankframework.pipes.Base64Pipe"
+				getInputFromSessionKey="FileContent" preserveInput="true"
+				storeResultInSessionKey="multipart1" />
+
+			<pipe name="createMultipartXml" className="org.frankframework.pipes.FixedResultPipe"
+				storeResultInSessionKey="multipartXml"
+				filename="Multipart/MultipartXml.xml" />
+
+			<pipe name="createResponse" className="org.frankframework.pipes.FixedResultPipe"
+				filename="Multipart/GetDocument_Response.xml">
+				<forward name="success" path="READY"/>
+			</pipe>
+		</pipeline>
+	</adapter>
+
 </module>

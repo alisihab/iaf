@@ -1,15 +1,18 @@
-<ibis>
+<module>
 	<adapter name="StringResolver" description="Test the functioning of the StringResolver">
-		<receiver className="nl.nn.adapterframework.receivers.GenericReceiver" name="StringResolver">
-			<listener className="nl.nn.adapterframework.receivers.JavaListener" serviceName="ibis4test-StringResolver" />
+		<receiver>
+			<listener className="org.frankframework.receivers.JavaListener" serviceName="ibis4test-StringResolver" />
 		</receiver>
 		<pipeline firstPipe="ResolveString">
 			<exits>
 				<exit path="EXIT" state="success" />
 			</exits>
-			<pipe name="ResolveString" className="nl.nn.adapterframework.pipes.FixedResult" fileName="StringResolver/result.xml" substituteVars="true">
+			<pipe name="ResolveString" className="org.frankframework.pipes.FixedResultPipe" filename="StringResolver/result.xml">
+				<forward name="success" path="ReplaceValues" />
+			</pipe>
+			<pipe name="ReplaceValues" className="org.frankframework.pipes.ReplacerPipe" substituteVars="true">
 				<forward name="success" path="EXIT" />
 			</pipe>
 		</pipeline>
 	</adapter>
-</ibis>
+</module>

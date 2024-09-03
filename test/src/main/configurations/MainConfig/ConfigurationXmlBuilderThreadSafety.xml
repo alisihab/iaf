@@ -1,10 +1,8 @@
 <module>
 	<adapter name="XmlBuilderThreadSafety">
-		<receiver
-			className="nl.nn.adapterframework.receivers.GenericReceiver"
-			>
+		<receiver>
 			<listener
-				className="nl.nn.adapterframework.receivers.JavaListener"
+				className="org.frankframework.receivers.JavaListener"
 				serviceName="ibis4test-XmlBuilderThreadSafety"
 			/>
 		</receiver>
@@ -16,61 +14,51 @@
 				name="Parallel processing"
 				getInputFromSessionKey="originalMessage"
 				>
-				<sender className="nl.nn.adapterframework.senders.ParallelSenders">
+				<sender className="org.frankframework.senders.ParallelSenders">
 					<sender
-						className="nl.nn.adapterframework.jdbc.DirectQuerySender"
+						className="org.frankframework.jdbc.DirectQuerySender"
 						queryType="select"
-						jmsRealm="jdbc"
 					/>
 					<sender
-						className="nl.nn.adapterframework.jdbc.DirectQuerySender"
+						className="org.frankframework.jdbc.DirectQuerySender"
 						queryType="select"
-						jmsRealm="jdbc"
 					/>
 					<sender
-						className="nl.nn.adapterframework.jdbc.DirectQuerySender"
+						className="org.frankframework.jdbc.DirectQuerySender"
 						queryType="select"
-						jmsRealm="jdbc"
 					/>
 					<sender
-						className="nl.nn.adapterframework.jdbc.DirectQuerySender"
+						className="org.frankframework.jdbc.DirectQuerySender"
 						queryType="select"
-						jmsRealm="jdbc"
 					/>
 					<sender
-						className="nl.nn.adapterframework.jdbc.DirectQuerySender"
+						className="org.frankframework.jdbc.DirectQuerySender"
 						queryType="select"
-						jmsRealm="jdbc"
 					/>
 					<sender
-						className="nl.nn.adapterframework.jdbc.DirectQuerySender"
+						className="org.frankframework.jdbc.DirectQuerySender"
 						queryType="select"
-						jmsRealm="jdbc"
 					/>
 					<sender
-						className="nl.nn.adapterframework.jdbc.DirectQuerySender"
+						className="org.frankframework.jdbc.DirectQuerySender"
 						queryType="select"
-						jmsRealm="jdbc"
 					/>
 					<sender
-						className="nl.nn.adapterframework.jdbc.DirectQuerySender"
+						className="org.frankframework.jdbc.DirectQuerySender"
 						queryType="select"
-						jmsRealm="jdbc"
 					/>
 					<sender
-						className="nl.nn.adapterframework.jdbc.DirectQuerySender"
+						className="org.frankframework.jdbc.DirectQuerySender"
 						queryType="select"
-						jmsRealm="jdbc"
 					/>
 					<sender
-						className="nl.nn.adapterframework.jdbc.DirectQuerySender"
+						className="org.frankframework.jdbc.DirectQuerySender"
 						queryType="select"
-						jmsRealm="jdbc"
 					/>
-				</sender>	
+				</sender>
 	        	<forward name="success" path="Echo"/>
 	        </pipe>
-			<pipe name="Echo" className="nl.nn.adapterframework.pipes.EchoPipe">
+			<pipe name="Echo" className="org.frankframework.pipes.EchoPipe">
 				<forward name="success" path="READY"/>
 			</pipe>
 		</pipeline>
